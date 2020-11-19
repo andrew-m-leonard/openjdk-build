@@ -13,6 +13,7 @@ limitations under the License.
 */
 
 import groovy.json.JsonSlurper
+import hudson.FilePath
 
 node ("master") {
   def jenkinsUrl = "${params.JENKINS_URL}"
