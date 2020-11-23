@@ -570,6 +570,7 @@ getJdkArchivePath() {
   # local version="$(parseJavaVersionString)
   # echo "jdk-${version}"
 
+  stepIntoTheWorkingDirectory
   local version=$(getOpenJdkVersion)
   echo "$version"
 }
@@ -830,6 +831,7 @@ getFirstTagFromOpenJDKGitRepo() {
   if [ -z "$firstMatchingNameFromRepo" ]; then
     echo "WARNING: Failed to identify latest tag in the repository" 1>&2
     pwd 1>&2
+    ls -l 1>&2
   else
     echo "$firstMatchingNameFromRepo"
   fi
