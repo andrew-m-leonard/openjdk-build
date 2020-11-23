@@ -829,6 +829,7 @@ getFirstTagFromOpenJDKGitRepo() {
 
   if [ -z "$firstMatchingNameFromRepo" ]; then
     echo "WARNING: Failed to identify latest tag in the repository" 1>&2
+    pwd 1>&2
   else
     echo "$firstMatchingNameFromRepo"
   fi
