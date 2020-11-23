@@ -570,7 +570,6 @@ getJdkArchivePath() {
   # local version="$(parseJavaVersionString)
   # echo "jdk-${version}"
 
-  stepIntoTheWorkingDirectory
   local version=$(getOpenJdkVersion)
   echo "$version"
 }
@@ -854,6 +853,8 @@ createArchive() {
 
 # Create a Tar ball
 createOpenJDKTarArchive() {
+  stepIntoTheWorkingDirectory
+
   local jdkTargetPath=$(getJdkArchivePath)
   local jreTargetPath=$(getJreArchivePath)
   local testImageTargetPath=$(getTestImageArchivePath)
