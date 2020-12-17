@@ -430,9 +430,16 @@ executeTemplatedFile() {
 
   echo "Currently at '${PWD}'"
 
+  # OpenSSL uses the same CROSS_COMPILE environment variable name
+  CROSS_COMPILE_SAVE=${CROSS_COMPILE}
+  unset CROSS_COMPILE
+
   # Execute the build passing the workspace dir and target dir as params for configure.txt
   bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]}
   exitCode=$?
+
+  # Restore CROSS_COMPILE value
+  export CROSS_COMPILE=${CROSS_COMPILE_SAVE}
 
   if [ "${exitCode}" -eq 1 ]; then
     echo "Failed to make the JDK, exiting"
