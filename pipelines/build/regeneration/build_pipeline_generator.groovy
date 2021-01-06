@@ -10,15 +10,15 @@ node('master') {
     
     def config = [
       TEST                : false,
-      GIT_URL             : "https://github.com/AdoptOpenJDK/openjdk-build.git",
-      BRANCH              : "master",
-      BUILD_FOLDER        : "build-scripts",
+      GIT_URL             : "https://github.com/andrew-m-leonard/openjdk-build.git",
+      BRANCH              : "pipelines-test",
+      BUILD_FOLDER        : "build-scripts-testing",
       JOB_NAME            : "openjdk${javaVersion}-pipeline",
       SCRIPT              : "pipelines/build/openjdk${javaVersion}_pipeline.groovy",
       disableJob          : false,
       triggerSchedule     : ""
     ];
-    checkout([$class: 'GitSCM', userRemoteConfigs: [[url: config.GIT_URL]]])
+    checkout([$class: 'GitSCM', branches: [[name: config.BRANCH]], userRemoteConfigs: [[url: config.GIT_URL]]])
     
     def target;
     try {
@@ -45,15 +45,32 @@ node('master') {
 
     if (Boolean.parseBoolean(enablePipelineSchedule) == true) {
       try {
-        config.triggerSchedule = target.triggerSchedule
+        config.triggerSchedule = target.triggerSchedule_nightly
       } catch (Exception ex) {
         config.triggerSchedule = "@daily";
       }
     }
 
-    println "[INFO] JDK${javaVersion}: triggerSchedule = ${config.triggerSchedule}"
+    println "[INFO] JDK${javaVersion}: nightly triggerSchedule = ${config.triggerSchedule}"
 
+    // Create nightly pipeline
     def create = jobDsl targets: "pipelines/jobs/pipeline_job_template.groovy", ignoreExisting: false, additionalParameters: config
+ 
+    // Create weekly release pipeline
+    config.JOB_NAME = "weekly-openjdk${javaVersion}-pipeline"
+    config.SCRIPT   = "pipelines/build/common/weekly_release_pipeline.groovy"
+    config.PIPELINE = "openjdk${javaVersion}-pipeline"
+
+    if (Boolean.parseBoolean(enablePipelineSchedule) == true) {
+      try {
+        config.triggerSchedule = target.triggerSchedule_weekly
+      } catch (Exception ex) {
+        config.triggerSchedule = "@weekly";
+      }
+    }
+    println "[INFO] JDK${javaVersion}: weekly triggerSchedule = ${config.triggerSchedule}"
+    def create_weekly = jobDsl targets: "pipelines/jobs/weekly_release_pipeline_job_template.groovy", ignoreExisting: false, additionalParameters: config
+
     target.disableJob = false
   })
 }
