@@ -519,7 +519,7 @@ class Builder implements Serializable {
         }
 
         context.stage("publish") {
-            context.build job: 'build-scripts/release/refactor_openjdk_release_tool',
+            context.build job: 'build-scripts-testing/release/refactor_openjdk_release_tool',
                     parameters: [
                         ['$class': 'BooleanParameterValue', name: 'RELEASE', value: release],
                         context.string(name: 'TAG', value: tag),

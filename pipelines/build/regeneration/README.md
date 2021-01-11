@@ -4,7 +4,7 @@ To enable concurrent pipeline builds (i.e. submitting two pipelines in parallel)
 
 ## Intro
 
-All of our [pipelines](https://ci.adoptopenjdk.net/job/build-scripts/) make use of [downstream jobs](https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/) to build Adopts JDK's. In short, the jobs are created in the pipelines with a set of configurations passed down to them. To create these jobs, we utilise a plugin called [job dsl](https://github.com/jenkinsci/job-dsl-plugin) to create a `dsl` file for each downstream job, containing the configurations, node label, etc.
+All of our [pipelines](https://ci.adoptopenjdk.net/job/build-scripts-testing/) make use of [downstream jobs](https://ci.adoptopenjdk.net/job/build-scripts-testing/job/jobs/) to build Adopts JDK's. In short, the jobs are created in the pipelines with a set of configurations passed down to them. To create these jobs, we utilise a plugin called [job dsl](https://github.com/jenkinsci/job-dsl-plugin) to create a `dsl` file for each downstream job, containing the configurations, node label, etc.
 
 In the past, we created these dsl's in the [pipeline files](https://github.com/AdoptOpenJDK/openjdk-build/tree/master/pipelines/build). So each time we wanted to create a downstream job, we would create all of the job dsl's that were possible for the pipeline and pick the one that we needed. Not only was this resource intensive and slow, but it also meant that concurrent builds were impossible due to the risk of one builds dsl's overwriting another's. This is why we have created pipeline job generators to create the dsl's for the pipelines to use, instead of creating them in the pipeline jobs.
 
@@ -12,7 +12,7 @@ The job regenerators are essentially downstream job makers. They pull in the [ta
 
 ## Where they are
 
-They are stored in the [utils](https://ci.adoptopenjdk.net/job/build-scripts/job/utils/) folder of our jenkins server. The jobs themselves are called `pipeline_jobs_generator_jdk11u`, `pipeline_jobs_generator_jdk8u`, etc. NOTE: When the JDK HEAD updates, these jobs will need to be updated too (see [RELEASING.md](https://github.com/AdoptOpenJDK/openjdk-build/blob/master/RELEASING.md#steps-for-every-version)) for how to do so.
+They are stored in the [utils](https://ci.adoptopenjdk.net/job/build-scripts-testing/job/utils/) folder of our jenkins server. The jobs themselves are called `pipeline_jobs_generator_jdk11u`, `pipeline_jobs_generator_jdk8u`, etc. NOTE: When the JDK HEAD updates, these jobs will need to be updated too (see [RELEASING.md](https://github.com/AdoptOpenJDK/openjdk-build/blob/master/RELEASING.md#steps-for-every-version)) for how to do so.
 
 ## How they work
 
@@ -57,33 +57,33 @@ Commit message: "Merge pull request #32 from M-Davies/api_user_agent"
 [Pipeline] echo
 [INFO] FOUND MATCH! buildConfiguration key: x64Mac and config file key: x64Mac
 [Pipeline] echo
-[INFO] build name: build-scripts/jobs/jdk/jdk-mac-x64-hotspot
+[INFO] build name: build-scripts-testing/jobs/jdk/jdk-mac-x64-hotspot
 [Pipeline] step
 Processing DSL script pipelines/build/common/create_job_from_template.groovy
 Existing items:
-    GeneratedJob{name='build-scripts/jobs/jdk'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-mac-x64-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-mac-x64-hotspot'}
 Unreferenced items:
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-aix-ppc64-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-aix-ppc64-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-aarch64-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-aarch64-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-ppc64le-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-ppc64le-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-s390x-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-s390x-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-x64-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-linux-x64-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-mac-x64-openj9'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-windows-x64-hotspot'}
-    GeneratedJob{name='build-scripts/jobs/jdk/jdk-windows-x64-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-aix-ppc64-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-aix-ppc64-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-aarch64-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-aarch64-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-ppc64le-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-ppc64le-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-s390x-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-s390x-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-x64-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-linux-x64-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-mac-x64-openj9'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-windows-x64-hotspot'}
+    GeneratedJob{name='build-scripts-testing/jobs/jdk/jdk-windows-x64-openj9'}
 [Pipeline] echo
-[SUCCESS] Regenerated configuration for job build-scripts/jobs/jdk/jdk-mac-x64-hotspot
+[SUCCESS] Regenerated configuration for job build-scripts-testing/jobs/jdk/jdk-mac-x64-hotspot
 ```
 
 ## Build Pipeline Generator
 
-This generator generates the [top level](https://ci.adoptopenjdk.net/job/build-scripts/) pipeline jobs. It works by iterating through the config files, defining a job dsl configuration for each version that has a version config file. It then calls [pipeline_job_template.groovy](https://github.com/AdoptOpenJDK/openjdk-build/blob/master/pipelines/jobs/pipeline_job_template.groovy) to finalise the dsl. By default, the [job that runs this file](https://ci.adoptopenjdk.net/job/build-scripts/job/utils/job/build-pipeline-generator/) has restricted read access so you will likely need to contact a jenkins admin to see the results of the job.
+This generator generates the [top level](https://ci.adoptopenjdk.net/job/build-scripts-testing/) pipeline jobs. It works by iterating through the config files, defining a job dsl configuration for each version that has a version config file. It then calls [pipeline_job_template.groovy](https://github.com/AdoptOpenJDK/openjdk-build/blob/master/pipelines/jobs/pipeline_job_template.groovy) to finalise the dsl. By default, the [job that runs this file](https://ci.adoptopenjdk.net/job/build-scripts-testing/job/utils/job/build-pipeline-generator/) has restricted read access so you will likely need to contact a jenkins admin to see the results of the job.
 
 ## Downstream Test Jobs
 

@@ -58,8 +58,8 @@ node ("master") {
     }
 
     // Pull in other paramterised values (or use defaults if they're not defined)
-    def jobRoot = "$JOB_ROOT" != "" ? JOB_ROOT : "build-scripts"
-    def jenkinsBuildRoot = "$JENKINS_BUILD_ROOT" != "" ? JENKINS_BUILD_ROOT : "https://ci.adoptopenjdk.net/job/build-scripts/"
+    def jobRoot = "$JOB_ROOT" != "" ? JOB_ROOT : "build-scripts-testing"
+    def jenkinsBuildRoot = "$JENKINS_BUILD_ROOT" != "" ? JENKINS_BUILD_ROOT : "https://ci.adoptopenjdk.net/job/build-scripts-testing/"
     def excludes = "$EXCLUDES_LIST" != "" ? EXCLUDES_LIST : ""
 
     println "[INFO] Running regeneration script with the following configuration:"

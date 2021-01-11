@@ -12,7 +12,7 @@ node('master') {
       TEST                : false,
       GIT_URL             : "https://github.com/AdoptOpenJDK/openjdk-build.git",
       BRANCH              : "master",
-      BUILD_FOLDER        : "build-scripts",
+      BUILD_FOLDER        : "build-scripts-testing",
       JOB_NAME            : "openjdk${javaVersion}-pipeline",
       SCRIPT              : "pipelines/build/openjdk${javaVersion}_pipeline.groovy",
       disableJob          : false,

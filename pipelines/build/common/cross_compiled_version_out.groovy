@@ -4,7 +4,7 @@ import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException
  * See https://github.com/AdoptOpenJDK/openjdk-build/issues/1773 for the inspiration for this.
  *
  * This file is referenced by the upstream job at pipelines/build/common/openjdk_build_pipeline.groovy.
- * This job is run at build-scripts/job/utils/job/cross-compiled-version-out/.
+ * This job is run at build-scripts-testing/job/utils/job/cross-compiled-version-out/.
  *
  * The job looks like:
  *  1. Switch into a suitable node

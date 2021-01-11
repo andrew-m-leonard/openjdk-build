@@ -26,7 +26,7 @@ class PullRequestTestPipeline implements Serializable {
     Map<String, ?> testConfigurations
     List<Integer> javaVersions
 
-    String BUILD_FOLDER = "build-scripts-pr-tester/build-test"
+    String BUILD_FOLDER = "build-scripts-testing-pr-tester/build-test"
 
     /*
     * Creates a configuration for the top level pipeline job
@@ -96,10 +96,10 @@ class PullRequestTestPipeline implements Serializable {
                     excludedBuilds,
                     currentBuild,
                     context,
-                    "build-scripts-pr-tester/build-test",
+                    "build-scripts-testing-pr-tester/build-test",
                     gitRepo,
                     branch,
-                    "https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/job/build-test"
+                    "https://ci.adoptopenjdk.net/job/build-scripts-testing-pr-tester/job/build-test"
             ).regenerate()
 
             context.println "[SUCCESS] All done!"

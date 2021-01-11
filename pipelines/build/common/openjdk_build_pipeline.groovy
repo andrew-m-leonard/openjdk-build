@@ -325,7 +325,7 @@ class Build {
                 ]
 
                 // Execute sign job
-                def signJob = context.build job: "build-scripts/release/sign_build",
+                def signJob = context.build job: "build-scripts-testing/release/sign_build",
                         propagate: true,
                         parameters: params
 
@@ -340,7 +340,7 @@ class Build {
                     context.sh "rm workspace/target/* || true"
 
                     context.copyArtifacts(
-                            projectName: "build-scripts/release/sign_build",
+                            projectName: "build-scripts-testing/release/sign_build",
                             selector: context.specific("${signJob.getNumber()}"),
                             filter: 'workspace/target/*',
                             fingerprintArtifacts: true,
@@ -367,7 +367,7 @@ class Build {
         def nodeFilter = "${buildConfig.TARGET_OS}&&macos10.14&&xcode10"
 
         // Execute installer job
-        def installerJob = context.build job: "build-scripts/release/create_installer_mac",
+        def installerJob = context.build job: "build-scripts-testing/release/create_installer_mac",
                 propagate: true,
                 parameters: [
                         context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
@@ -380,7 +380,7 @@ class Build {
                 ]
 
         context.copyArtifacts(
-                projectName: "build-scripts/release/create_installer_mac",
+                projectName: "build-scripts-testing/release/create_installer_mac",
                 selector: context.specific("${installerJob.getNumber()}"),
                 filter: 'workspace/target/*',
                 fingerprintArtifacts: true,
@@ -403,7 +403,7 @@ class Build {
         }
 
         // Execute installer job
-        def installerJob = context.build job: "build-scripts/release/create_installer_linux",
+        def installerJob = context.build job: "build-scripts-testing/release/create_installer_linux",
                 propagate: true,
                 parameters: [
                         context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
@@ -442,7 +442,7 @@ class Build {
         def patch_version = versionData.patch ?: 0
 
         // Execute installer job
-        def installerJob = context.build job: "build-scripts/release/create_installer_windows",
+        def installerJob = context.build job: "build-scripts-testing/release/create_installer_windows",
                 propagate: true,
                 parameters: [
                         context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
@@ -461,7 +461,7 @@ class Build {
                         ['$class': 'LabelParameterValue', name: 'NODE_LABEL', label: "${buildConfig.TARGET_OS}&&wix"]
                 ]
         context.copyArtifacts(
-                projectName: "build-scripts/release/create_installer_windows",
+                projectName: "build-scripts-testing/release/create_installer_windows",
                 selector: context.specific("${installerJob.getNumber()}"),
                 filter: 'wix/ReleaseDir/*',
                 fingerprintArtifacts: true,
@@ -474,7 +474,7 @@ class Build {
             if (file.contains("-jre")) {
 
                 context.println("We have a JRE. Running another installer for it...")
-                def jreinstallerJob = context.build job: "build-scripts/release/create_installer_windows",
+                def jreinstallerJob = context.build job: "build-scripts-testing/release/create_installer_windows",
                         propagate: true,
                         parameters: [
                             context.string(name: 'UPSTREAM_JOB_NUMBER', value: "${env.BUILD_NUMBER}"),
@@ -494,7 +494,7 @@ class Build {
                         ]
 
                 context.copyArtifacts(
-                    projectName: "build-scripts/release/create_installer_windows",
+                    projectName: "build-scripts-testing/release/create_installer_windows",
                     selector: context.specific("${jreinstallerJob.getNumber()}"),
                     filter: 'wix/ReleaseDir/*',
                     fingerprintArtifacts: true,
@@ -867,7 +867,7 @@ class Build {
             filter = "OpenJDK*-jdk*_${buildConfig.TARGET_OS}_*.tar.gz"
         }
 
-        def crossCompileVersionOut = context.build job: "build-scripts/utils/cross-compiled-version-out",
+        def crossCompileVersionOut = context.build job: "build-scripts-testing/utils/cross-compiled-version-out",
             propagate: true,
             parameters: [
                 context.string(name: 'UPSTREAM_JOB_NAME', value: "${env.JOB_NAME}"),
@@ -879,7 +879,7 @@ class Build {
             ]
 
         context.copyArtifacts(
-            projectName: "build-scripts/utils/cross-compiled-version-out",
+            projectName: "build-scripts-testing/utils/cross-compiled-version-out",
             selector: context.specific("${crossCompileVersionOut.getNumber()}"),
             filter: "CrossCompiledVersionOuts/${copyFileFilter}",
             target: "workspace/target/metadata",

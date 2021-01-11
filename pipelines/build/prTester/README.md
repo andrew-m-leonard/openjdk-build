@@ -78,9 +78,9 @@ This group is a matrix of [GitHub Status Checks](https://docs.github.com/en/free
 
 ### openjdk-build-pr-tester
 
-**Seen in the PR Status Checks as `pipeline-build-check`, the job is located [here](https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/job/openjdk-build-pr-tester/)**
+**Seen in the PR Status Checks as `pipeline-build-check`, the job is located [here](https://ci.adoptopenjdk.net/job/build-scripts-testing-pr-tester/job/openjdk-build-pr-tester/)**
 
-This job runs a set of [sandbox pipelines](https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/job/build-test/) to test the changes that you have made to our codebase in a mock live Jenkins environment. It's executed by a custom groovy script from the job itself:
+This job runs a set of [sandbox pipelines](https://ci.adoptopenjdk.net/job/build-scripts-testing-pr-tester/job/build-test/) to test the changes that you have made to our codebase in a mock live Jenkins environment. It's executed by a custom groovy script from the job itself:
 
 ```groovy
 node("master") {
@@ -115,7 +115,7 @@ If you are on either list, the PR tester will run against your PR whenever you c
 
 ##### `run tests`
 
-- Executes a new [#openjdk-build-pr-tester](#openjdk-build-pr-tester) job against this PR. These jobs will populate the GitHub status checks field as described above. Please be patient as the tester does not run concurrently so it may take some time to execute the jobs if there is a long job queue. You can track the progress of it in [Jenkins](https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/) OR look at the status check message:
+- Executes a new [#openjdk-build-pr-tester](#openjdk-build-pr-tester) job against this PR. These jobs will populate the GitHub status checks field as described above. Please be patient as the tester does not run concurrently so it may take some time to execute the jobs if there is a long job queue. You can track the progress of it in [Jenkins](https://ci.adoptopenjdk.net/job/build-scripts-testing-pr-tester/) OR look at the status check message:
 
   - Example of a PR that is in the queue:
   ![Image of queued tester](./images/pr_tester_queued.png)
@@ -136,4 +136,4 @@ If you are on either list, the PR tester will run against your PR whenever you c
 - **ADMIN COMMAND ONLY**
 - This command adds a new user to the whitelist but not to the admin list of the [#openjdk-build-pr-tester](#openjdk-build-pr-tester) job. As of typing this, there is [currently no way to check if you have the correct permissions](https://github.com/AdoptOpenJDK/openjdk-build/issues/2055#issuecomment-688801090).
 - Should you want to be promoted to the whitelist, please contact one of the admins through [#infrastructure](https://adoptopenjdk.slack.com/archives/C53GHCXL4) in Slack.
-- Should you want the up to date admin or white list, check the configuration of the [openjdk-build-pr-tester](https://ci.adoptopenjdk.net/job/build-scripts-pr-tester/job/openjdk-build-pr-tester/) job. If you don't have the permissions to view the configuration, then try out the `add to whitelist` and `run tests` commands on a test PR to see if they work.
+- Should you want the up to date admin or white list, check the configuration of the [openjdk-build-pr-tester](https://ci.adoptopenjdk.net/job/build-scripts-testing-pr-tester/job/openjdk-build-pr-tester/) job. If you don't have the permissions to view the configuration, then try out the `add to whitelist` and `run tests` commands on a test PR to see if they work.
