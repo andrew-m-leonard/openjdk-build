@@ -10,9 +10,9 @@ node('master') {
     
     def config = [
       TEST                : false,
-      GIT_URL             : "https://github.com/AdoptOpenJDK/openjdk-build.git",
-      BRANCH              : "master",
-      BUILD_FOLDER        : "build-scripts",
+      GIT_URL             : "https://github.com/andrew-m-leonard/openjdk-build.git",
+      BRANCH              : "releaseref-test",
+      BUILD_FOLDER        : "build-scripts-testing",
       JOB_NAME            : "openjdk${javaVersion}-pipeline",
       SCRIPT              : "pipelines/build/openjdk${javaVersion}_pipeline.groovy",
       disableJob          : false,
