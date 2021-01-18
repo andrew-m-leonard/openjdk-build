@@ -585,8 +585,8 @@ return {
     String jenkinsToken
         ->
         if (jobRootDir == null) jobRootDir = "build-scripts";
-        if (gitUri == null) gitUri = "https://github.com/AdoptOpenJDK/openjdk-build.git";
-        if (gitBranch == null) gitBranch = "master";
+        if (gitUri == null) gitUri = "https://github.com/andrew-m-leonard/openjdk-build.git";
+        if (gitBranch == null) gitBranch = "keepreports-test";
         if (jenkinsBuildRoot == null) jenkinsBuildRoot = "https://ci.adoptopenjdk.net/job/build-scripts/";
         if (jenkinsUsername == null) jenkinsUsername = ""
         if (jenkinsToken == null) jenkinsToken = ""
