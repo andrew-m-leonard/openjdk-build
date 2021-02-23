@@ -700,11 +700,12 @@ removingUnnecessaryFiles() {
     # if debug symbols were found, copy them to a different folder
     if [ -n "${debugSymbols}" ]; then
       echo "Copying found debug symbols to ${debugImageTargetPath}"
+echo "==> ${debugSymbols}"
       mkdir -p "${debugImageTargetPath}"
       echo "${debugSymbols}" | cpio -pdm ${debugImageTargetPath}
     fi
 
-    deleteDebugSymbols
+    #deleteDebugSymbols
   fi
 
   echo "Finished removing unnecessary files from ${jdkTargetPath}"
