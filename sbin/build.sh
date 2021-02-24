@@ -702,6 +702,7 @@ removingUnnecessaryFiles() {
     *cygwin*)
       # on Windows, we want to take .pdb and .map files
       debugSymbols=$(find "${jdkTargetPath}" -type f -name "*.pdb" -o -name "*.map")
+      echo "===> found: ${debugSymbols}"
       ;;
     darwin)
       # on MacOSX, we want to take the files within the .dSYM folders
@@ -710,6 +711,7 @@ removingUnnecessaryFiles() {
     *)
       # on other platforms, we want to take .debuginfo files
       debugSymbols=$(find "${jdkTargetPath}" -type f -name "*.debuginfo")
+      echo "===> found: ${debugSymbols}"
       ;;
     esac
 
@@ -720,7 +722,7 @@ removingUnnecessaryFiles() {
       echo "${debugSymbols}" | cpio -pdm ${debugImageTargetPath}
     fi
 
-    deleteDebugSymbols
+    #deleteDebugSymbols
   fi
 
   echo "Finished removing unnecessary files from ${jdkTargetPath}"
