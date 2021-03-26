@@ -1089,7 +1089,7 @@ mirrorToJRE() {
 
   case "${BUILD_CONFIG[OS_KERNEL_NAME]}" in
   "darwin")
-    JRE_HOME=$(ls -d "${PWD}"/build/*/images/"${BUILD_CONFIG[JRE_PATH]}"/Contents/Home)
+    JRE_HOME=$(ls -d ${PWD}/build/*/images/${BUILD_CONFIG[JRE_PATH]}/Contents/Home)
     ;;
   *)
     JRE_HOME=$(ls -d "${PWD}"/build/*/images/"${BUILD_CONFIG[JRE_PATH]}")
