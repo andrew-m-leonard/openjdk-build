@@ -345,12 +345,15 @@ configureDebugParameters() {
 
   # If debug symbols package is requested, generate them separately
   if [ ${BUILD_CONFIG[CREATE_DEBUG_IMAGE]} == true ]; then
-    addConfigureArg "--with-native-debug-symbols=" "external"
+    #addConfigureArg "--with-native-debug-symbols=" "external"
+    echo "no debug"
   else
     if [ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK8_CORE_VERSION}" ]; then
-      addConfigureArg "--disable-zip-debug-info" ""
+      #addConfigureArg "--disable-zip-debug-info" ""
+      echo "no debug"
       if [[ "${BUILD_CONFIG[BUILD_VARIANT]}" != "${BUILD_VARIANT_OPENJ9}" ]]; then
-        addConfigureArg "--disable-debug-symbols" ""
+        #addConfigureArg "--disable-debug-symbols" ""
+        echo "no debug"
       fi
     else
       if [[ "${BUILD_CONFIG[BUILD_VARIANT]}" != "${BUILD_VARIANT_OPENJ9}" ]]; then
