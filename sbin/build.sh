@@ -737,7 +737,7 @@ removingUnnecessaryFiles() {
       ;;
     *)
       # on other platforms, we want to take .debuginfo files
-      debugSymbols=$(find "${jdkTargetPath}" -type f -name "*.debuginfo")
+      debugSymbols=$(find "${jdkTargetPath}" -type f -name "*.debuginfo" -o -name "*.diz")
       ;;
     esac
 
