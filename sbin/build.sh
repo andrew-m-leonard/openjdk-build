@@ -354,7 +354,7 @@ configureDebugParameters() {
 
   # If debug symbols package is requested, generate them separately
   if [ ${BUILD_CONFIG[CREATE_DEBUG_IMAGE]} == true ]; then
-    addConfigureArg "--with-native-debug-symbols=" "zipped"
+    addConfigureArg "--with-native-debug-symbols=" "external"
   else
     if [ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK8_CORE_VERSION}" ]; then
       addConfigureArg "--disable-zip-debug-info" ""
