@@ -31,9 +31,20 @@ if [[ ! -z "$alreadyConfigured" ]]; then
   echo "Not reconfiguring due to the presence of config.status"
 else
   #Templated var that, gets replaced by build.sh
-  {configureArg} | tee "$1/$2/configure.txt"
+  strace -o strace -ff -e trace=openat,execve {configureArg} | tee "$1/$2/configure.txt"
 
   exitCode=$?
+
+  ls -l
+
+  grep -v ENOENT strace.* | cut -d'"' -f2 | grep -v "/jdk/" | grep "^/" | grep -v "/proc/" | grep -v "/tmp/" | sort | uniq | while read F; do dpkg -S "$F" >> packagelist.txt 2>> filesnotinpackage.txt; done
+
+  echo "packagelist.txt===>"
+  cat packagelist.txt
+
+  echo "filesnotinpackage.txt===>"
+  cat filesnotinpackage.txt  
+
   if [ "${exitCode}" -ne 0 ]; then
     exit 2;
   fi
