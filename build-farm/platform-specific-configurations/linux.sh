@@ -133,11 +133,11 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
         apiUrlTemplate="https://api.\${vendor}.net/v3/binary/latest/\${JDK_BOOT_VERSION}/\${releaseType}/linux/\${ARCHITECTURE}/jdk/\${VARIANT}/normal/\${vendor}"
       fi
       apiURL=$(eval echo ${apiUrlTemplate})
-      echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
+      echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-ppc64le-hotspot/508/artifact/workspace/target/OpenJDK-jdk_ppc64le_linux_hotspot_2021-10-06-18-04.tar.gz"
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
       # the fallback mechanism, as downloading of the GA binary might fail.
       set +e
-      wget -q -O - "${apiURL}" | tar xpzf - --strip-components=1 -C "$bootDir"
+      wget -O - "https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-ppc64le-hotspot/508/artifact/workspace/target/OpenJDK-jdk_ppc64le_linux_hotspot_2021-10-06-18-04.tar.gz" | tar xpzf - --strip-components=1 -C "$bootDir"
       retVal=$?
       set -e
       if [ $retVal -ne 0 ]; then
@@ -162,8 +162,15 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
           # shellcheck disable=SC2034
           vendor="adoptopenjdk"
           apiURL=$(eval echo ${apiUrlTemplate})
-          echo "Attempting to download GA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
-          wget -q -O - "${apiURL}" | tar xpzf - --strip-components=1 -C "$bootDir"
+          echo "Attempting to download GA release of boot JDK version ${JDK_BOOT_VERSION} from https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-x64-hotspot/496/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-05-08-04.tar.gz"
+          set +e
+          wget -O - "https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-x64-hotspot/496/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-05-08-04.tar.gz" | tar xpzf - --strip-components=1 -C "$bootDir"
+          retVal=$?
+          set -e
+          if [ $retVal -ne 0 ]; then
+            echo "DOWNLOAD FAILED $retVal"
+            exit 1
+          fi
         fi
       fi
     fi
