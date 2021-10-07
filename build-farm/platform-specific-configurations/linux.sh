@@ -137,8 +137,9 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
       # the fallback mechanism, as downloading of the GA binary might fail.
       set +e
-      wget -O - "https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-ppc64le-hotspot/508/artifact/workspace/target/OpenJDK-jdk_ppc64le_linux_hotspot_2021-10-06-18-04.tar.gz" | tar xpzf - --strip-components=1 -C "$bootDir"
+      curl -L "https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-pffpc64le-hotspot/508/artifact/workspace/target/OpenJDK-jdk_ppc64le_linux_hotspot_2021-10-06-18-04.tar.gz" | tar xpzf - --strip-components=1 -C "$bootDir"
       retVal=$?
+    retVal=1
       set -e
       if [ $retVal -ne 0 ]; then
         # We must be a JDK HEAD build for which no boot JDK exists other than
@@ -151,7 +152,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
         apiURL=$(eval echo ${apiUrlTemplate})
         echo "Attempting to download EA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
         set +e
-        wget -q -O - "${apiURL}" | tar xpzf - --strip-components=1 -C "$bootDir"
+        curl -L "${apiURL}" | tar xpzf - --strip-components=1 -C "$bootDir"
         retVal=$?
         set -e
         if [ $retVal -ne 0 ]; then
