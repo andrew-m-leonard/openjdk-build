@@ -549,7 +549,12 @@ checkingAndDownloadingFreeType() {
 prepareMozillaCacerts() {
     echo "Generating cacerts from Mozilla's bundle"
     cd "$SCRIPT_DIR/../security"
-    time ./mk-cacerts.sh --keytool "${BUILD_CONFIG[JDK_BOOT_DIR]}/bin/keytool"
+    if [[ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK8_CORE_VERSION}" ]] || [[ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK11_CORE_VERSION}" ]] || [[ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK16_CORE_VERSION}" ]] || [[ "${BUILD_CONFIG[OPENJDK_CORE_VERSION]}" == "${JDK17_CORE_VERSION}" ]]; then
+      time ./mk-cacerts.sh --keytool "${BUILD_CONFIG[JDK_BOOT_DIR]}/bin/keytool"
+    else
+      # jdk-18+ build uses JDK make tool to load keystore for reproducible builds
+      time ./mk-cacerts.sh --nokeystore
+    fi
 }
 
 # Download all of the dependencies for OpenJDK (Alsa, FreeType, etc.)

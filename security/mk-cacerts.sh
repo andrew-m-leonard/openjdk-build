@@ -17,11 +17,13 @@ set -euo pipefail
 PROGRAM_NAME="${0##*/}"
 KEYTOOL="keytool" # By default, use keytool from PATH.
 HELP=false
+NO_KEYSTORE=false
 
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         -k|--keytool) KEYTOOL="$2"; shift ;;
         -h|--help) HELP=true ;;
+        -n|--nokeystore) NO_KEYSTORE=true ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -35,6 +37,7 @@ if [ "$HELP" = true ] ; then
     echo "Options:"
     echo "-h, --help            Show this help message and exit."
     echo "-k, --keytool <path>  keytool to use to create the cacerts keystore."
+    echo "-n, --nokeystore      only generate the certs/* files, do not create the cacerts keystore."
     exit 0
 fi
 
@@ -61,27 +64,34 @@ awk '
   /-----END CERTIFICATE-----/ {split_after=1}
   {print > ("certs/cert" n ".crt")}' < ca-bundle.crt
 
-# Import each CA certificate individually into the keystore. As alias, we use
-# the subject which looks like
+# Rename each CA certificate file to the alias for import into the keystore by the JDK make file.
+# As alias, we use the subject which looks like
 # 
 #     subject= /OU=GlobalSign Root CA - R2/O=GlobalSign/CN=GlobalSign
 #
-# We chop of `subject= /` and replace the forward slashes with commas, so it
-# becomes `OU=GlobalSign Root CA - R2,O=GlobalSign,CN=GlobalSign`. The full
+# We chop of `subject= /` and replace the forward slashes with commas,
+# and spaces to underscores, so it
+# becomes `OU=GlobalSign_Root_CA_-_R2,O=GlobalSign,CN=GlobalSign`. The full
 # subject needs to be used to prevent alias collisions.
-#for FILE in certs/*.crt; do
-#    SUBJECT=$(openssl x509 -subject -noout -in "$FILE")
-#    TRIMMED_SUBJECT="${SUBJECT#*subject= /}"
-#    ALIAS="${TRIMMED_SUBJECT//\//,}"
-#
-#    echo "Processing certificate with alias: $ALIAS" 
-#
-#    "$KEYTOOL" -noprompt \
-#      -import \
-#      -storetype JKS \
-#      -alias "$ALIAS" \
-#      -file "$FILE" \
-#      -keystore "cacerts" \
-#      -storepass "changeit"
-#done
+for FILE in certs/*.crt; do
+    SUBJECT=$(openssl x509 -subject -noout -in "$FILE")
+    TRIMMED_SUBJECT="${SUBJECT#*subject= /}"
+    ALIAS_NO_SLASH="${TRIMMED_SUBJECT//\//,}"
+    ALIAS_NO_SPACE="${ALIAS_NO_SLASH// /_}"
+    ALIAS="${ALIAS_NO_SPACE,,}"
+
+    echo "Renaming $FILE to $ALIAS"
+    mv "$FILE" "certs/$ALIAS"
+    
+    if [ "$NO_KEYSTORE" = false ] ; then
+     echo "Processing certificate with alias: $ALIAS" 
+     "$KEYTOOL" -noprompt \
+      -import \
+      -storetype JKS \
+      -alias "$ALIAS" \
+      -file "$FILE" \
+      -keystore "cacerts" \
+      -storepass "changeit"
+    fi
+done
 
