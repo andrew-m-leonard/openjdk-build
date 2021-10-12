@@ -133,11 +133,11 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
         apiUrlTemplate="https://api.\${vendor}.net/v3/binary/latest/\${JDK_BOOT_VERSION}/\${releaseType}/linux/\${ARCHITECTURE}/jdk/\${VARIANT}/normal/\${vendor}"
       fi
       apiURL=$(eval echo ${apiUrlTemplate})
-      echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from "https://ci.adoptopenjdk.net/view/work-in-progress/job/andrew-jdk-linux-x64-hotspot/14/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-08-09-51.tar.gz
+      echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from https://ci.adoptopenjdk.net/view/work-in-progress/job/andrew-jdk-linux-x64-hotspot/44/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-12-14-31.tar.gz" 
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
       # the fallback mechanism, as downloading of the GA binary might fail.
       set +e
-      curl -L ""https://ci.adoptopenjdk.net/view/work-in-progress/job/andrew-jdk-linux-x64-hotspot/14/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-08-09-51.tar.gz | tar xpzf - --strip-components=1 -C "$bootDir"
+      curl -L "https://ci.adoptopenjdk.net/view/work-in-progress/job/andrew-jdk-linux-x64-hotspot/44/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-10-12-14-31.tar.gz" | tar xpzf - --strip-components=1 -C "$bootDir"
       retVal=$?
       set -e
       if [ $retVal -ne 0 ]; then
