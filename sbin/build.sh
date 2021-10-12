@@ -553,7 +553,7 @@ executeTemplatedFile() {
   set +eu
 
   # Execute the build passing the workspace dir and target dir as params for configure.txt
-  bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]}
+  bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]} REPRODUCIBLE
   exitCode=$?
 
   if [ "${exitCode}" -eq 3 ]; then
@@ -566,6 +566,10 @@ executeTemplatedFile() {
     echo "For example, on RHEL you would do export JDK_BOOT_DIR=/usr/lib/jvm/java-1.7.0-openjdk-1.7.0.131-2.6.9.0.el7_3.x86_64"
     echo "Current JDK_BOOT_DIR value: ${BUILD_CONFIG[JDK_BOOT_DIR]}"
     exit 2
+  elif [ "${exitCode}" -eq 4 ]; then
+    echo "Failed to compare reproducible builds of the JDK, exiting"
+    echo "The compare of the default CDS and NOCOOPS CDS JDK builds were not identical"
+    exit 3
   fi
 
   # Restore exit behavior

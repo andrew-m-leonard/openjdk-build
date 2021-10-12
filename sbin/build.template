@@ -27,13 +27,27 @@ set +e
 
 alreadyConfigured=$(/usr/bin/find . -name "config.status")
 
+#
+# If a Reproducible build, then perform two duplicate JDK builds, one with the default CDS,
+# the other with the NOCOOPS CDS. Then check the JDK images are identical apart from the CDS archives
+# and merge the CDS files into the one build.
+# This is a reproducible build workaround for known bug: https://bugs.openjdk.java.net/browse/JDK-8253495
+#
+reproducible_configure_opt=""
+if [ "x$3" == "xREPRODUCIBLE" ]; then
+  reproducible_configure_opt="--with-cds-disable-nocoops"
+fi
+
 if [[ ! -z "$alreadyConfigured" ]]; then
   echo "Not reconfiguring due to the presence of config.status"
 else
   #Templated var that, gets replaced by build.sh
-  {configureArg} | tee "$1/$2/configure.txt"
-
+  {configureArg} "${reproducible_configure_opt}" > "$1/$2/configure.txt"
   exitCode=$?
+
+  # Cannot pipe to tee and capture configure exitCode, so echo configure output here..
+  cat "$1/$2/configure.txt"
+
   if [ "${exitCode}" -ne 0 ]; then
     exit 2;
   fi
@@ -47,3 +61,60 @@ exitCode=$?
 if [ "${exitCode}" -ne 0 ]; then
    exit 3;
 fi
+
+if [ "x$3" == "xREPRODUCIBLE" ]; then
+  reproducible_configure_opt="--with-cds-disable-default"
+
+  # Save default CDS build
+  rm -rf "$1/$2/build_cds_default"
+  mv build "$1/$2/build_cds_default"
+
+  #Templated var that, gets replaced by build.sh
+  {configureArg} "${reproducible_configure_opt}" > "$1/$2/configure.txt"
+  exitCode=$?
+
+  # Cannot pipe to tee and capture configure exitCode, so echo configure output here..
+  cat "$1/$2/configure.txt"
+
+  if [ "${exitCode}" -ne 0 ]; then
+    exit 2;
+  fi
+
+  #Templated var that, gets replaced by build.sh
+  echo "{makeCommandArg}" > "$1/$2/makeCommandArg.txt"
+  {makeCommandArg}
+
+  exitCode=$?
+  if [ "${exitCode}" -ne 0 ]; then
+     exit 3;
+  fi
+
+  #
+  # We now do a binary compare of the two JDK image builds, they should be identical apart from the CDS archives
+  #
+  echo "Checking the duplicate reproducible CDS JDK builds are identical apart from the CDS archives..."
+  diff -r build/*/images/jdk $1/$2/build_cds_default/*/images/jdk > $1/$2/reproducible_jdk_diff.out
+  exitCode=$?
+  cat $1/$2/reproducible_jdk_diff.out
+  if [ "${exitCode}" -ne 0 ]; then
+    grep -v "Only in .*build_cds_default/.*/images/jdk/lib/server: classes.jsa" $1/$2/reproducible_jdk_diff.out | grep -v "Only in .*build/.*/images/jdk/lib/server: classes_nocoops.jsa"
+    grepRc=$?
+    if [ "${exitCode}" -ne 1 ]; then
+      echo "Default CDS and nocoops CDS JDK images are not identical."
+      exit 4;
+    else
+      echo "Reproducible CDS builds are identical, merging CDS images to build..."
+      cp $1/$2/build_cds_default/*/images/jdk/lib/server/classes.jsa build/*/images/jdk/lib/server
+      cpRc=$?
+      if [ "${cpRc}" -ne 0 ]; then
+        echo "Failed to cp \"$1/$2/build_cds_default/*/images/jdk/lib/server/classes.jsa\" \"build/*/images/jdk/lib/server\""
+        exit 0;
+      fi
+    fi
+  else
+    echo "Default CDS and nocoops CDS JDK images diff rc==0, it should have CDS archive differences."
+    exit 4;
+  fi
+
+fi
+
