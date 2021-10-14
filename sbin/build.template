@@ -101,7 +101,7 @@ if [ "x$3" == "xREPRODUCIBLE" ]; then
     grepRc=$?
     if [ "${exitCode}" -ne 1 ]; then
       echo "Default CDS and nocoops CDS JDK images are not identical."
-      exit 4;
+      exit 0;
     else
       echo "Reproducible CDS builds are identical, merging CDS images to build..."
       cp $1/$2/build_cds_default/*/images/jdk/lib/server/classes.jsa build/*/images/jdk/lib/server

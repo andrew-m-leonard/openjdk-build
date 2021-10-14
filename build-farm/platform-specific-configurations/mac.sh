@@ -100,7 +100,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
       mkdir -p "$bootDir"
       releaseType="ga"
       vendor="adoptium"
-      apiUrlTemplate="https://api.\${vendor}.net/v3/binary/latest/\${JDK_BOOT_VERSION}/\${releaseType}/mac/\${ARCHITECTURE}/jdk/\${VARIANT}/normal/\${vendor}"
+      apiUrlTemplate="https://ci.adoptopenjdk.net/view/work-in-progress/job/andrew-jdk-mac-x64-hotspot/5/artifact/workspace/target/OpenJDK-jdk_x64_mac_hotspot_2021-10-14-15-50.tar.gz"
       apiURL=$(eval echo ${apiUrlTemplate})
       echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
