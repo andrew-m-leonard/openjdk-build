@@ -62,7 +62,7 @@ if [ "${exitCode}" -ne 0 ]; then
    exit 3;
 fi
 
-if [ "x$3" == "xREPRODUCIBLE" ]; then
+if [ "x$3" == "xRRREPRODUCIBLE" ]; then
   reproducible_configure_opt="--with-cds-disable-default"
 
   # Save default CDS build
