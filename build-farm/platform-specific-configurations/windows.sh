@@ -91,7 +91,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
         fi
       fi
       unzip -q openjdk.zip
-      mv "$(ls -d jdk-"${JDK_BOOT_VERSION}"*)" "$bootDir"
+      mv "$(ls -d jdk-"18"*)" "$bootDir"
     fi
   fi
 fi
