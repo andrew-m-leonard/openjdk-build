@@ -116,9 +116,9 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
   # Note we export $BOOT_JDK_VARIABLE (i.e. JDKXX_BOOT_DIR) here
   # instead of BOOT_JDK_VARIABLE (no '$').
   export "${BOOT_JDK_VARIABLE}"="$bootDir"
-  if [ ! -x "$bootDir/bin/javac" ]; then
+  if [ ! -x "$bootDir/bin/xxjavac" ]; then
     # Set to a default location as linked in the ansible playbooks
-    if [ -x "/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}/bin/javac" ]; then
+    if [ -x "/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}/bin/xxjavac" ]; then
       echo "Could not use ${BOOT_JDK_VARIABLE} - using /usr/lib/jvm/jdk-${JDK_BOOT_VERSION}"
       # shellcheck disable=SC2140
       export "${BOOT_JDK_VARIABLE}"="/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}"
