@@ -124,7 +124,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
       export "${BOOT_JDK_VARIABLE}"="/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}"
     elif [ "$JDK_BOOT_VERSION" -ge 8 ]; then # Adopt has no build pre-8
       mkdir -p "$bootDir"
-      releaseType="ga"
+      releaseType="ea"
       vendor="adoptium"
       # TODO: Temporary change until https://github.com/AdoptOpenJDK/openjdk-infrastructure/issues/2145 is resolved
       if [ "$JDK_BOOT_VERSION" -ge 15 ] && [ "$VARIANT" = "openj9" ] && [ "$ARCHITECTURE" = "aarch64" ]; then
@@ -132,6 +132,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
       else
         apiUrlTemplate="https://api.\${vendor}.net/v3/binary/latest/\${JDK_BOOT_VERSION}/\${releaseType}/linux/\${ARCHITECTURE}/jdk/\${VARIANT}/normal/\${vendor}"
       fi
+ apiUrlTemplate="https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk/job/jdk-linux-x64-hotspot/543/artifact/workspace/target/OpenJDK-jdk_x64_linux_hotspot_2021-12-11-23-31.tar.gz"
       apiURL=$(eval echo ${apiUrlTemplate})
       echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
