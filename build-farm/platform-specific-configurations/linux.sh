@@ -118,7 +118,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
   export "${BOOT_JDK_VARIABLE}"="$bootDir"
   if [ ! -x "$bootDir/bin/javac" ]; then
     # Set to a default location as linked in the ansible playbooks
-    if [ -x "/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}/bin/javac" ]; then
+    if [ -x "/aaausr/lib/jvm/jdk-${JDK_BOOT_VERSION}/bin/javac" ]; then
       echo "Could not use ${BOOT_JDK_VARIABLE} - using /usr/lib/jvm/jdk-${JDK_BOOT_VERSION}"
       # shellcheck disable=SC2140
       export "${BOOT_JDK_VARIABLE}"="/usr/lib/jvm/jdk-${JDK_BOOT_VERSION}"
@@ -128,6 +128,7 @@ if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
       vendor="adoptium"
       apiUrlTemplate="https://api.\${vendor}.net/v3/binary/latest/\${JDK_BOOT_VERSION}/\${releaseType}/linux/\${ARCHITECTURE}/jdk/hotspot/normal/\${vendor}"
       apiURL=$(eval echo ${apiUrlTemplate})
+      apiURL="https://ci.adoptopenjdk.net/job/build-scripts/job/jobs/job/jdk17u/job/jdk17u-linux-x64-temurin/28/artifact/workspace/target/OpenJDK17U-jdk_x64_linux_hotspot_2022-03-18-15-46.tar.gz"
       echo "Downloading GA release of boot JDK version ${JDK_BOOT_VERSION} from ${apiURL}"
       # make-adopt-build-farm.sh has 'set -e'. We need to disable that for
       # the fallback mechanism, as downloading of the GA binary might fail.
