@@ -110,6 +110,8 @@ then
   echo "=== END OF ARM32 STATUS CHECK ==="
 fi
 
+echo "debug2: ${JDK7_BOOT_DIR}"
+
 BOOT_JDK_VARIABLE="JDK${JDK_BOOT_VERSION}_BOOT_DIR"
 if [ "${VARIANT}" == "${BUILD_VARIANT_DRAGONWELL}" ] && [ "$JAVA_FEATURE_VERSION" -eq 8 ]; then
   if [ -d /opt/dragonwell8 ]; then
@@ -132,6 +134,7 @@ if [ "${VARIANT}" == "${BUILD_VARIANT_DRAGONWELL}" ] && [ "$JAVA_FEATURE_VERSION
 fi
 
 if [ ! -d "$(eval echo "\$$BOOT_JDK_VARIABLE")" ]; then
+  echo "debug3: \$$BOOT_JDK_VARIABLE = ${JDK7_BOOT_DIR} does not exist"
   bootDir="$PWD/jdk-$JDK_BOOT_VERSION"
   # Note we export $BOOT_JDK_VARIABLE (i.e. JDKXX_BOOT_DIR) here
   # instead of BOOT_JDK_VARIABLE (no '$').

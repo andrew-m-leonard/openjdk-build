@@ -150,6 +150,8 @@ then
 fi
 echo "Required boot JDK version: ${JDK_BOOT_VERSION}"
 
+echo "debug1: ${JDK7_BOOT_DIR}"
+
 # export for platform specific scripts
 export JDK_BOOT_VERSION
 
