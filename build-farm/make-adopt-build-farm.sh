@@ -145,7 +145,7 @@ then
   if [ "${JAVA_FEATURE_VERSION}" == "19" ]; then
     # To support reproducible-builds the jar/jmod --date option is required
     # which is only available from jdk-19 so we cannot bootstrap with JDK18
-    JDK_BOOT_VERSION="19"
+    JDK_BOOT_VERSION="17"
   fi
 fi
 echo "Required boot JDK version: ${JDK_BOOT_VERSION}"
