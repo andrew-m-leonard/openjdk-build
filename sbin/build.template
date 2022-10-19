@@ -31,7 +31,7 @@ if [[ ! -z "$alreadyConfigured" ]]; then
   echo "Not reconfiguring due to the presence of config.status"
 else
   #Templated var that, gets replaced by build.sh
-  {configureArg} | tee "$1/$2/configure.txt"
+  strace -o strace -ff -e openat,execve {configureArg} | tee "$1/$2/configure.txt"
 
   exitCode=$?
   if [ "${exitCode}" -ne 0 ]; then
@@ -41,7 +41,7 @@ fi
 
 #Templated var that, gets replaced by build.sh
 echo "{makeCommandArg}" > "$1/$2/makeCommandArg.txt"
-{makeCommandArg}
+strace -o strace -ff -e openat,execve {makeCommandArg}
 
 exitCode=$?
 if [ "${exitCode}" -ne 0 ]; then
