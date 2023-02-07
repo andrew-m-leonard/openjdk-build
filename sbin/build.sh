@@ -1803,6 +1803,8 @@ cd "${BUILD_CONFIG[WORKSPACE_DIR]}"
 
 parseArguments "$@"
 
+echo "ANDREWs build.sh"
+
 if [[ "${BUILD_CONFIG[ASSEMBLE_EXPLODED_IMAGE]}" == "true" ]]; then
   configureCommandParameters
   buildTemplatedFile
