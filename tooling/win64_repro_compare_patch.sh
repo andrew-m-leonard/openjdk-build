@@ -184,9 +184,9 @@ for f in $FILES
 	exit 1
     fi
 
-    # Neutralize vendor string
-    if ! java BinRepl --inFile "$f" --outFile "$f" --string "${VENDOR_NAME}=AAAAAA"; then
-        echo "  Not found ==> java BinRepl --inFile \"$f\" --outFile \"$f\" --string \"${VENDOR_NAME}=AAAAAA\""
+    # Neutralize vendor string with 0x00 to same length
+    if ! java BinRepl --inFile "$f" --outFile "$f" --string "${VENDOR_NAME}=" --pad 00; then
+        echo "  Not found ==> java BinRepl --inFile \"$f\" --outFile \"$f\" --string \"${VENDOR_NAME}=\" --pad 00"
     fi
   done
 
@@ -199,7 +199,7 @@ for f in $FILES
     echo "javap and remove vendor string lines from $f"
     javap -v -sysinfo -l -p -c -s -constants $f > $f.javap.tmp
     rm $f
-    grep -v "$VERSION_REPL\|$VENDOR_NAME\|$VENDOR_URL\|$VENDOR_BUG_URL\|$VENDOR_VM_BUG_URL\|Classfile\|SHA-256" $f.javap.tmp > $f.javap
+    grep -v "Last modified\|$VERSION_REPL\|$VENDOR_NAME\|$VENDOR_URL\|$VENDOR_BUG_URL\|$VENDOR_VM_BUG_URL\|Classfile\|SHA-256" $f.javap.tmp > $f.javap
     rm $f.javap.tmp
   done
 
@@ -217,12 +217,12 @@ for f in $FILES
 
 echo "Successfully removed all VersionProps.java vendor strings from ${JDK_DIR}"
 
-echo "Removing BootJDK Created-By: Vendor strings from jrt-fs.jar MANIFEST.MF from ${JDK_DIR}"
-grep -v "Created-By:" "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
+echo "Removing BootJDK Created-By: and Vendor strings from jrt-fs.jar MANIFEST.MF from ${JDK_DIR}"
+grep -v "Created-By:\|$VENDOR_NAME" "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
 rm "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
 mv "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp" "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
 
-grep -v "Created-By:" "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
+grep -v "Created-By:\|$VENDOR_NAME" "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
 rm "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
 mv "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp" "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
 
