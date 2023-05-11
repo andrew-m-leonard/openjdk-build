@@ -103,12 +103,17 @@ class BinRepl {
             }
 	} else {
             byte[] binA = str[0].getBytes("UTF-8");
-	    byte[] binB = str[1].getBytes("UTF-8");
+	    byte[] binB;
+	    if (str.length < 2) {
+                binB = new byte[0];
+	    } else {
+	        binB = str[1].getBytes("UTF-8");
+	    }
 	    if (strPad != null) {
-	        int lenDiff = str[0].length()-str[1].length();
-                if (lenDiff > 0) {
+                if ((binA.length-binB.length) > 0) {
+		    // Need to pad binB
                     byte[] hexPad = hexformat.parseHex(strPad);
-		    byte[] binC = new byte[binB.length+lenDiff];
+		    byte[] binC = new byte[binA.length];
 		    for(int i=0; i<str[0].length(); i++) {
                         if (i >= binB.length) {
                             binC[i] = hexPad[0];
@@ -129,7 +134,11 @@ class BinRepl {
                 System.out.println("replacement string not found in: "+inFile);
                 System.exit(1);
             } else {
-                System.out.println("Number of occurrences of "+str[0]+" replaced with "+str[1]+" = "+replCounter);
+		if (str.length < 2) {
+                    System.out.println("Number of occurrences of \""+str[0]+"\" replaced with \"\" = "+replCounter);
+		} else {
+		    System.out.println("Number of occurrences of \""+str[0]+"\" replaced with \""+str[1]+"\" = "+replCounter);
+		}
             }
         }
 
