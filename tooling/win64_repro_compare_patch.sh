@@ -14,18 +14,24 @@
 
 set -e
 
-DEL_CERT="$1"
-JDK_DIR="$2"
-SELF_CERT_FILE="$3"
-SELF_CERT_PASS="$4"
-VERSION_REPL="$5"
+JDK_DIR="$1"
+SELF_CERT_FILE="$2"
+SELF_CERT_PASS="$3"
+VERSION_REPL="$4"
+VENDOR_NAME="$5"
+VENDOR_URL="$6"
+VENDOR_BUG_URL="$7"
+VENDOR_VM_BUG_URL="$8"
+
+if [ "$#" -ne 8 ]; then
+  echo "Syntax: cmd <jdk_dir> <cert_file> <cert_pass> <version_str> <vendor_name> <vendor_url> <vendor_bug_url> <vendor_vm_bug_url>"
+  exit 1
+fi
 
 if [ ! -d "${JDK_DIR}" ]; then
   echo "$JDK_DIR does not exist"
   exit 1
 fi
-
-if [ "$DEL_CERT" == "yes" ]; then
 
 echo "Expanding the 'modules' Image to remove signatures from within.."
 jimage extract --dir "${JDK_DIR}/lib/modules_extracted" "${JDK_DIR}/lib/modules"
@@ -100,11 +106,23 @@ for f in $FILES
 
 echo "Successfully removed all SELF_CERT Signatures from ${JDK_DIR}"
 
-exit
-fi
+excluded="cacerts classes.jsa classes_nocoops.jsa SystemModules\$0.class SystemModules\$all.class SystemModules\$default.class"
+echo "Removing excluded files known to differ: ${excluded}"
+for exclude in $excluded
+  do
+    FILES=$(find "${JDK_DIR}" -type f -name "$exclude")
+    for f in $FILES
+      do
+        echo "Removing $f"
+	rm $f
+      done
+  done
 
-echo "Removing lib/security/cacerts as different ones are used by vendors"
-rm ${JDK_DIR}/lib/security/cacerts
+echo "Removing java.base module-info.class, known to differ by jdk.jpackage module hash"
+rm "${JDK_DIR}/jmods/expanded_java.base.jmod/classes/module-info.class"
+rm "${JDK_DIR}/lib/modules_extracted/java.base/module-info.class"
+
+echo "Successfully removed all excluded files from ${JDK_DIR}"
 
 echo "Updating EXE/DLL VS_VERSION_INFO in ${JDK_DIR}"
 FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
@@ -166,47 +184,51 @@ for f in $FILES
 	exit 1
     fi
 
-    # Remove version suffix, eg:17.0.6+10-LTS, this might not be present in the exe/dll
-    if [ ! -z "$VERSION_REPL" ]; then
-        if ! java BinRepl --inFile "$f" --outFile "$f" --string "$VERSION_REPL" --pad "00"; then
-            echo "  $VERSION_REPL not found in $f"
-        fi
+    # Neutralize vendor string
+    if ! java BinRepl --inFile "$f" --outFile "$f" --string "${VENDOR_NAME}=AAAAAA"; then
+        echo "  Not found ==> java BinRepl --inFile \"$f\" --outFile \"$f\" --string \"${VENDOR_NAME}=AAAAAA\""
     fi
   done
 
 echo "Successfully removed all EXE/DLL timestamps, CRC and debug repro hex from ${JDK_DIR}"
 
-echo "Removing all version.class from ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -name 'version.class')
+echo "Dissassemble and remove vendor string lines from all VersionProps.class from ${JDK_DIR}"
+FILES=$(find "${JDK_DIR}" -type f -name 'VersionProps.class')
 for f in $FILES
   do
-    echo "Removing $f"
-    rm "$f"
+    echo "javap and remove vendor string lines from $f"
+    javap -v -sysinfo -l -p -c -s -constants $f > $f.javap.tmp
+    rm $f
+    grep -v "$VERSION_REPL\|$VENDOR_NAME\|$VENDOR_URL\|$VENDOR_BUG_URL\|$VENDOR_VM_BUG_URL\|Classfile\|SHA-256" $f.javap.tmp > $f.javap
+    rm $f.javap.tmp
   done
 
-echo "Successfully removed all version.class from ${JDK_DIR}"
+echo "Successfully removed all VersionProps.class vendor strings from ${JDK_DIR}"
 
-echo "Replacing all version suffixes from ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -name 'version.*' && find "${JDK_DIR}" -type f -name 'sa.properties')
+echo "Remove all version and vendor string lines in VersionProps.java from ${JDK_DIR}"
+FILES=$(find "${JDK_DIR}" -type f -name 'VersionProps.java')
 for f in $FILES
   do
-    echo "Removing version string suffix from $f"
-    if [ ! -z "$VERSION_REPL" ]; then
-        if ! java BinRepl --inFile "$f" --outFile "$f" --string "$VERSION_REPL"; then
-            echo "  $VERSION_REPL not found in $f"
-        fi
-    fi
+    echo "Removing version and vendor string lines from $f"
+    grep -v "$VERSION_REPL\|$VENDOR_NAME\|$VENDOR_URL\|$VENDOR_BUG_URL\|$VENDOR_VM_BUG_URL" $f > $f.tmp
+    rm $f
+    mv $f.tmp $f
   done
 
-echo "Successfully removed all version string suffixes from ${JDK_DIR}"
+echo "Successfully removed all VersionProps.java vendor strings from ${JDK_DIR}"
 
-echo "Removing ${JDK_DIR}/**/VersionProps.java & .class"
-rm "${JDK_DIR}/lib/src_zip_expanded/java.base/java/lang/VersionProps.java"
-rm "${JDK_DIR}/jmods/expanded_java.base.jmod/classes/java/lang/VersionProps.class"
-rm "${JDK_DIR}/lib/modules_extracted/java.base/java/lang/VersionProps.class"
+echo "Removing BootJDK Created-By: Vendor strings from jrt-fs.jar MANIFEST.MF from ${JDK_DIR}"
+grep -v "Created-By:" "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
+rm "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
+mv "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp" "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
 
-echo "Removing Vendor strings last 3 lines from ${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
-cat "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"  | head -n -3 > "${JDK_DIR}/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
+grep -v "Created-By:" "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF" > "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp"
+rm "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
+mv "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF.tmp" "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFEST.MF"
+
+echo "Removing Vendor strings from release file ${JDK_DIR}/release"
+sed -i "s=$VERSION_REPL==g" "${JDK_DIR}/release"
+sed -i "s=$VENDOR_NAME==g" "${JDK_DIR}/release"
 
 echo "***********"
 echo "SUCCESS :-)"
