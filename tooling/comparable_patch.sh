@@ -33,6 +33,16 @@ if [ ! -d "${JDK_DIR}" ]; then
   exit 1
 fi
 
+OS=$("uname")
+if [[ "$OS" =~ CYGWIN* ]]; then
+  echo "On Windows"
+elif [[ "$OS" =~ Linux* ]]; then
+  echo "On Linux"
+else
+  echo "Do not recognise OS: $OS"
+  exit 1
+fi
+
 echo "Expanding the 'modules' Image to remove signatures from within.."
 jimage extract --dir "${JDK_DIR}/lib/modules_extracted" "${JDK_DIR}/lib/modules"
 rm ${JDK_DIR}/lib/modules
@@ -41,7 +51,7 @@ echo "Expanding the 'src.zip' to normalize file permissions"
 unzip ${JDK_DIR}/lib/src.zip -d ${JDK_DIR}/lib/src_zip_expanded
 rm ${JDK_DIR}/lib/src.zip
 
-echo "Expanding jmods to process exe/dll within"
+echo "Expanding jmods to process binaries within"
 FILES=$(find "${JDK_DIR}" -type f -path '*.jmod')
 for f in $FILES
   do
@@ -64,23 +74,22 @@ unzip -d ${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded ${JDK_DIR}
 rm ${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar
 
 echo "Removing all Signatures from ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
-for f in $FILES
-  do
+if [[ "$OS" =~ CYGWIN* ]]; then
+  FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+  for f in $FILES
+   do
     echo "Removing signature from $f"
     if signtool remove /s $f ; then
 	echo "  ==> Successfully removed signature from $f"
     else
 	echo "  ==> $f contains no signature"
     fi
-  done
+   done
 
-echo "Successfully removed all Signatures from ${JDK_DIR}"
-
-echo "Adding SELF_SIGN Signatures for ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
-for f in $FILES
-  do
+  echo "Adding SELF_SIGN Signatures for ${JDK_DIR}"
+  FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+  for f in $FILES
+   do
     echo "Signing $f"
     if signtool sign /f $SELF_CERT_FILE /p $SELF_CERT_PASS $f ; then
         echo "  ==> Successfully signed $f"
@@ -88,25 +97,27 @@ for f in $FILES
         echo "  ==> $f failed to be signed!!"
         exit 1
     fi
-  done
+   done
 
-echo "Successfully SELF_CERT signed all Signatures in ${JDK_DIR}"
-
-echo "Removing all SELF_CERT Signatures from ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
-for f in $FILES
-  do
+  echo "Removing all SELF_CERT Signatures from ${JDK_DIR}"
+  FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+  for f in $FILES
+   do
     echo "Removing signature from $f"
     if signtool remove /s $f ; then
 	echo "  ==> Successfully removed signature from $f"
     else
 	echo "  ==> $f contains no signature"
     fi
-  done
-
+   done
+fi
 echo "Successfully removed all SELF_CERT Signatures from ${JDK_DIR}"
 
-excluded="cacerts classes.jsa classes_nocoops.jsa SystemModules\$0.class SystemModules\$all.class SystemModules\$default.class"
+if [[ "$OS" =~ CYGWIN* ]]; then
+  excluded="cacerts classes.jsa classes_nocoops.jsa SystemModules\$0.class SystemModules\$all.class SystemModules\$default.class"
+else
+  excluded="cacerts classes.jsa classes_nocoops.jsa"
+fi
 echo "Removing excluded files known to differ: ${excluded}"
 for exclude in $excluded
   do
@@ -118,32 +129,37 @@ for exclude in $excluded
       done
   done
 
-echo "Removing java.base module-info.class, known to differ by jdk.jpackage module hash"
-rm "${JDK_DIR}/jmods/expanded_java.base.jmod/classes/module-info.class"
-rm "${JDK_DIR}/lib/modules_extracted/java.base/module-info.class"
+if [[ "$OS" =~ CYGWIN* ]]; then
+  echo "Removing java.base module-info.class, known to differ by jdk.jpackage module hash"
+  rm "${JDK_DIR}/jmods/expanded_java.base.jmod/classes/module-info.class"
+  rm "${JDK_DIR}/lib/modules_extracted/java.base/module-info.class"
+fi
 
 echo "Successfully removed all excluded files from ${JDK_DIR}"
 
-echo "Updating EXE/DLL VS_VERSION_INFO in ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
-for f in $FILES
-  do
-    echo "Removing EXE/DLL VS_VERSION_INFO from $f"
-    # Neutralize CompanyName
-    oldVSInfoLen=$(UpdateVsVersionInfo "$f" "CompanyName=AAAAAA" | grep "OldLen" | tr -d ' ' | cut -d'=' -f2)
-    # Replace rdata section reference to .rsrc$ string with a neutral value
-    # ???? is a length of the referenced rsrc resource section. Differing Version Info resource length means this length differs
-    # fuzzy search: "????\.rsrc\$" in hex:
-    if ! java BinRepl --inFile "$f" --outFile "$f" --hex "?:?:?:?:2e:72:73:72:63:24-AA:AA:AA:AA:2e:72:73:72:63:24"; then
-        echo "  No .rsrc$ rdata reference found in $f"
-    fi
-  done
+if [[ "$OS" =~ CYGWIN* ]]; then
+  echo "Updating EXE/DLL VS_VERSION_INFO in ${JDK_DIR}"
+  FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+  for f in $FILES
+    do
+      echo "Removing EXE/DLL VS_VERSION_INFO from $f"
+      # Neutralize CompanyName
+      oldVSInfoLen=$(UpdateVsVersionInfo "$f" "CompanyName=AAAAAA" | grep "OldLen" | tr -d ' ' | cut -d'=' -f2)
+      # Replace rdata section reference to .rsrc$ string with a neutral value
+      # ???? is a length of the referenced rsrc resource section. Differing Version Info resource length means this length differs
+      # fuzzy search: "????\.rsrc\$" in hex:
+      if ! java BinRepl --inFile "$f" --outFile "$f" --hex "?:?:?:?:2e:72:73:72:63:24-AA:AA:AA:AA:2e:72:73:72:63:24"; then
+          echo "  No .rsrc$ rdata reference found in $f"
+      fi
+    done
 
-echo "Successfully updated all EXE/DLL VS_VERSION_INFO in ${JDK_DIR}"
+  echo "Successfully updated all EXE/DLL VS_VERSION_INFO in ${JDK_DIR}"
+fi
 
-echo "Removing EXE/DLL timestamps, CRC and debug repro hex from ${JDK_DIR}"
-FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
-for f in $FILES
+if [[ "$OS" =~ CYGWIN* ]]; then
+ echo "Removing EXE/DLL timestamps, CRC and debug repro hex from ${JDK_DIR}"
+ FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+ for f in $FILES
   do
     echo "Removing EXE/DLL non-comparable timestamp, CRC, debug repro hex from $f"
     rm -f dumpbin.tmp
@@ -183,14 +199,26 @@ for f in $FILES
         echo "  FAILED ==> java BinRepl --inFile \"$f\" --outFile \"$f\" --hex \"${checksumhexLE}-AA:AA:AA:AA\" --firstOnly --32bitBoundaryOnly"
 	exit 1
     fi
+  done
+ echo "Successfully removed all EXE/DLL timestamps, CRC and debug repro hex from ${JDK_DIR}"
+fi
 
+echo "Removing Vendor name: $VENDOR_NAME from binaries from ${JDK_DIR}"
+if [[ "$OS" =~ CYGWIN* ]]; then
+ FILES=$(find "${JDK_DIR}" -type f -path '*.exe' && find "${JDK_DIR}" -type f -path '*.dll')
+else
+ FILES=$(find "${JDK_DIR}" -type f -path '*.so')
+fi
+for f in $FILES
+  do
     # Neutralize vendor string with 0x00 to same length
+    echo "Neutralizing $VENDOR_NAME in $f"
     if ! java BinRepl --inFile "$f" --outFile "$f" --string "${VENDOR_NAME}=" --pad 00; then
         echo "  Not found ==> java BinRepl --inFile \"$f\" --outFile \"$f\" --string \"${VENDOR_NAME}=\" --pad 00"
     fi
   done
 
-echo "Successfully removed all EXE/DLL timestamps, CRC and debug repro hex from ${JDK_DIR}"
+echo "Successfully removed all Vendor name: $VENDOR_NAME from binaries from ${JDK_DIR}"
 
 echo "Dissassemble and remove vendor string lines from all VersionProps.class from ${JDK_DIR}"
 FILES=$(find "${JDK_DIR}" -type f -name 'VersionProps.class')
