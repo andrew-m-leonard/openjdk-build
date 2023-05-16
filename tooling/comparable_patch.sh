@@ -114,9 +114,9 @@ fi
 echo "Successfully removed all SELF_CERT Signatures from ${JDK_DIR}"
 
 if [[ "$OS" =~ CYGWIN* ]]; then
-  excluded="cacerts classes.jsa classes_nocoops.jsa SystemModules\$0.class SystemModules\$all.class SystemModules\$default.class"
+  excluded="NOTICE cacerts classes.jsa classes_nocoops.jsa SystemModules\$0.class SystemModules\$all.class SystemModules\$default.class"
 else
-  excluded="cacerts classes.jsa classes_nocoops.jsa"
+  excluded="NOTICE cacerts classes.jsa classes_nocoops.jsa"
 fi
 echo "Removing excluded files known to differ: ${excluded}"
 for exclude in $excluded
