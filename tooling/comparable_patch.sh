@@ -257,6 +257,8 @@ mv "${JDK_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded/META-INF/MANIFE
 echo "Removing Vendor strings from release file ${JDK_DIR}/release"
 sed -i "s=$VERSION_REPL==g" "${JDK_DIR}/release"
 sed -i "s=$VENDOR_NAME==g" "${JDK_DIR}/release"
+# BUILD_INFO likely different since built on different machines
+sed -i "s=^BUILD_INFO.*$==g" "${JDK_DIR}/release"
 
 echo "***********"
 echo "SUCCESS :-)"
