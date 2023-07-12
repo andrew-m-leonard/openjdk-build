@@ -1914,6 +1914,13 @@ loadConfigFromFile
 fixJavaHomeUnderDocker
 cd "${BUILD_CONFIG[WORKSPACE_DIR]}"
 
+yum -y install git
+yum -y install gcc-toolset-11
+yum -y install make autoconf lbzip2 file unzip zip
+yum -y install alsa-lib-devel cups-devel fontconfig-devel libXtst-devel libXt-devel libXrender-devel libXrandr-devel libXi-devel
+export PATH=/opt/rh/gcc-toolset-11/root/bin:$PATH
+
+
 parseArguments "$@"
 
 if [[ "${BUILD_CONFIG[ASSEMBLE_EXPLODED_IMAGE]}" == "true" ]]; then
