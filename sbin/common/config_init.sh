@@ -479,7 +479,7 @@ function configDefaults() {
       BUILD_CONFIG[MAKE_COMMAND_NAME]="gmake"
       ;;
     * )
-      BUILD_CONFIG[MAKE_COMMAND_NAME]="/usr/bin/make"
+      BUILD_CONFIG[MAKE_COMMAND_NAME]="/usr/bin/gmake"
       ;;
   esac
 
