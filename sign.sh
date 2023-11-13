@@ -83,7 +83,7 @@ signRelease()
             dir=$(dirname "$f")
             file=$(basename "$f")
             mv "$f" "${dir}/unsigned_${file}"
-            if ! curl --fail --silent --show-error -o "$f" -F file="@${dir}/unsigned_${file}" https://cbi.eclipse.org/authenticode/sign; then
+            if ! curl --fail --silent --show-error -o "$f" -F file="@${dir}/unsigned_${file}" https://cbi-staging.eclipse.org/authenticode/sign; then
               echo "curl command failed, sign of $f failed"
 
               # Retry up to 20 times
@@ -94,7 +94,7 @@ signRelease()
               while [ $iteration -le $max_iterations ] && [ $success = false ]; do
                 echo $iteration Of $max_iterations
                 sleep 1
-                if ! curl --fail --silent --show-error -o "$f" -F file="@${dir}/unsigned_${file}" https://cbi.eclipse.org/authenticode/sign; then
+                if ! curl --fail --silent --show-error -o "$f" -F file="@${dir}/unsigned_${file}" https://cbi-staging.eclipse.org/authenticode/sign; then
                   echo "curl command failed, $f Failed Signing On Attempt $iteration"
                   success=false
                   iteration=$((iteration+1))
