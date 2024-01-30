@@ -41,7 +41,7 @@ fi
 
 #Templated var that, gets replaced by build.sh
 echo "{makeCommandArg}" > "$1/$2/makeCommandArg.txt"
-{makeCommandArg}
+make images LOG=cmdlines
 
 exitCode=$?
 if [ "${exitCode}" -ne 0 ]; then
