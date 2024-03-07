@@ -152,9 +152,15 @@ configureReproducibleBuildDebugMapping() {
   if [ "${BUILD_CONFIG[OS_KERNEL_NAME]}" == "linux" ]; then
     # Add debug prefix map for root /usr/include, allowing for a SYSROOT
     sysroot="$(echo "${BUILD_CONFIG[USER_SUPPLIED_CONFIGURE_ARGS]}" | sed -nE 's/.*\-\-with\-sysroot=([^[:space:]]+).*/\1/p')"
+    devkit="$(echo "${BUILD_CONFIG[USER_SUPPLIED_CONFIGURE_ARGS]}" | sed -nE 's/.*\-\-with\-devkit=([^[:space:]]+).*/\1/p')"
     if [ "x$sysroot" != "x" ]; then
        root_include=${sysroot%/}"/usr/include"
        gcc_sysroot="--sysroot=${sysroot%/}"
+    elif [ "x$devkit" != "x" ]; then
+       devkit_toolchain="$(DEVKIT_ROOT=${devkit} eval $(grep DEVKIT_TOOLCHAIN_PATH= ${devkit}/devkit.info) && echo $DEVKIT_TOOLCHAIN_PATH)"
+       devkit_sysroot="$(DEVKIT_ROOT=${devkit} eval $(grep DEVKIT_SYSROOT= ${devkit}/devkit.info) && echo $DEVKIT_SYSROOT)"
+       root_include=${devkit_sysroot%/}"/usr/include"
+       gcc_sysroot="--sysroot=${devkit_sysroot%/}"
     else
        root_include="/usr/include"
        gcc_sysroot=""
@@ -162,32 +168,34 @@ configureReproducibleBuildDebugMapping() {
     echo "Adding -fdebug-prefix-map for root include: ${root_include}=/usr/include"
     fdebug_flags="-fdebug-prefix-map=${root_include}/=/usr/include/"
 
-    # Add debug prefix map for gcc include, allowing for SYSROOT
-    if [ -n "${CC-}" ]; then
-      gcc_include="$(dirname "$(echo "#include <stddef.h>" | $CC $gcc_sysroot -v -E - 2>&1 | grep stddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
-    elif [ "$(which gcc)" != "" ]; then
-      gcc_include="$(dirname "$(echo "#include <stddef.h>" | gcc $gcc_sysroot -v -E - 2>&1 | grep stddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
-    else
-      # Can't find gcc..
-      gcc_include=""
-    fi
-    if [ "x$gcc_include" != "x" ]; then
-      echo "Adding -fdebug-prefix-map for gcc include: ${gcc_include}=/usr/local/gcc_include"
-      fdebug_flags+=" -fdebug-prefix-map=${gcc_include}/=/usr/local/gcc_include/"
+    # Add debug prefix map for gcc/g++ include, allowing for SYSROOT
+    gcc=""
+    gxx=""
+    if [ "x$devkit_toolchain" != "x" ]; then
+      gcc="$devkit_toolchain/gcc"
+      gxx="$devkit_toolchain/g++"
+    elif [ -n "${CC-}" ] && [ -n "${CXX-}" ]; then
+      gcc="$CC"
+      gxx="$CXX"
+    elif [ "$(which gcc)" != "" ] && [ "$(which g++)" != "" ]; then
+      gcc="gcc"
+      gxx="g++"
     fi
 
-    # Add debug prefix map for g++ include, allowing for SYSROOT
-    if [ -n "${CXX-}" ]; then
-      gxx_include="$(dirname "$(echo "#include <cstddef>" | $CXX $gcc_sysroot -v -E -x c++ - 2>&1 | grep cstddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
-    elif [ "$(which g++)" != "" ]; then
-      gxx_include="$(dirname "$(echo "#include <cstddef>" | g++ $gcc_sysroot -v -E -x c++ - 2>&1 | grep cstddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
-    else
-      # Can't find g++..
-      gxx_include=""
+    if [ "x$gcc" != "x" ]; then
+      gcc_include="$(dirname "$(echo "#include <stddef.h>" | $gcc $gcc_sysroot -v -E - 2>&1 | grep stddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
+      if [ "x$gcc_include" != "x" ]; then
+        echo "Adding -fdebug-prefix-map for gcc include: ${gcc_include}=/usr/local/gcc_include"
+        fdebug_flags+=" -fdebug-prefix-map=${gcc_include}/=/usr/local/gcc_include/"
+      fi
     fi
-    if [ "x$gxx_include" != "x" ]; then
-      echo "Adding -fdebug-prefix-map for g++ include: ${gxx_include}=/usr/local/gxx_include"
-      fdebug_flags+=" -fdebug-prefix-map=${gxx_include}/=/usr/local/gxx_include/"
+
+    if [ "x$gxx" != "x" ]; then
+      gxx_include="$(dirname "$(echo "#include <cstddef>" | $gxx $gcc_sysroot -v -E -x c++ - 2>&1 | grep cstddef | tail -1 | tr -s " " | cut -d'"' -f2)")"
+      if [ "x$gxx_include" != "x" ]; then
+        echo "Adding -fdebug-prefix-map for g++ include: ${gxx_include}=/usr/local/gxx_include"
+        fdebug_flags+=" -fdebug-prefix-map=${gxx_include}/=/usr/local/gxx_include/"
+      fi
     fi
 
     local OUTPUT_DIR
