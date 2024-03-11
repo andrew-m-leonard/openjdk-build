@@ -198,6 +198,21 @@ configureReproducibleBuildDebugMapping() {
       fi
     fi
 
+    local OUTPUT_DIR
+    if [ "${BUILD_CONFIG[OS_ARCHITECTURE]}" == "armv7l" ]; then
+      OUTPUT_DIR="linux-arm-serverANDclient-release"
+    else
+      OUTPUT_DIR="linux-${BUILD_CONFIG[OS_ARCHITECTURE]}-server-release"
+    fi
+
+    #local buildOutputDir="${BUILD_CONFIG[WORKSPACE_DIR]}/${BUILD_CONFIG[WORKING_DIR]}/${BUILD_CONFIG[OPENJDK_SOURCE_DIR]}/build/${OUTPUT_DIR}/"
+    local buildOutputDir="build/${OUTPUT_DIR}/"
+
+    # Ensure directory is correctly formed so is mapped, with no ./ or //
+    #buildOutputDir=$(echo ${buildOutputDir} | sed 's,\./,,' | sed 's,//,/,')
+
+    local fdebug_flags="-fdebug-prefix-map=${buildOutputDir}="
+
     addConfigureArg "--with-extra-cflags=" "'${fdebug_flags}'"
     addConfigureArg "--with-extra-cxxflags=" "'${fdebug_flags}'"
   fi
