@@ -211,7 +211,7 @@ configureReproducibleBuildDebugMapping() {
     # Ensure directory is correctly formed so is mapped, with no ./ or //
     #buildOutputDir=$(echo ${buildOutputDir} | sed 's,\./,,' | sed 's,//,/,')
 
-    local fdebug_flags="-fdebug-prefix-map=${buildOutputDir}="
+    fdebug_flags+=" -fdebug-prefix-map=${buildOutputDir}="
 
     addConfigureArg "--with-extra-cflags=" "'${fdebug_flags}'"
     addConfigureArg "--with-extra-cxxflags=" "'${fdebug_flags}'"
