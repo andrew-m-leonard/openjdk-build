@@ -62,8 +62,7 @@ jobs:
           PR_TARGET_BRANCH: ${{ steps.get-pr-target-branch.outputs.pr_target_branch }}
           BRANCH_REGEX: ${{ inputs.branch-regex }}
 
-      - name: Code Freeze if matches regex
+      - uses: adoptium/.github/.github/workflows/code-freeze.yml@main
         if: (github.event_name == 'pull_request_target' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)) && steps.check-freeze-branch.outputs.code_freeze_branch == 'true'
-        uses: adoptium/.github/.github/workflows/code-freeze.yml@main
         secrets: inherit
 
