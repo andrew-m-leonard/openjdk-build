@@ -30,7 +30,7 @@ jobs:
   codefreeze_branch_check:
     uses: andrew-m-leonard/openjdk-build/.github/workflows/code-freeze-regex-branch.yml@master
     with:
-      branch-regex: "^maa.*er$"
+      branch-regex: "^ma.*er$"
 
   codefreeze_if_branch_match:
     needs: codefreeze_branch_check
