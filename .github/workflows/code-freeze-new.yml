@@ -37,10 +37,10 @@ jobs:
     needs: codefreeze_branch_check
     steps:
       - name: print
-          run: |
-            echo "MATCH ? $MATCHES"
-          env:
-            MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches  }}
+        run: |
+          echo "MATCH ? $MATCHES"
+        env:
+          MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches  }}
 
   #codefreeze_if_branch_match:
   #  needs: codefreeze_branch_check
