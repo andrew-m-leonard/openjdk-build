@@ -38,9 +38,9 @@ jobs:
     steps:
       - name: print
         run: |
-          echo "MATCH ? $MATCHES"
+          echo "MATCH ? $MATCHES LL ${{ needs.codefreeze_branch_check.outputs.regex-matches }}"
         env:
-          MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches  }}
+          MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches }}
 
   #codefreeze_if_branch_match:
   #  needs: codefreeze_branch_check
