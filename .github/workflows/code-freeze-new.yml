@@ -39,5 +39,5 @@ jobs:
     uses: andrew-m-leonard/openjdk-build/.github/workflows/code-freeze-regex-branch.yml@master
     secrets: inherit
     with:
-      branch-regex: "^ma.*er$"
+      branch-regex: "^maa.*er$"
 
