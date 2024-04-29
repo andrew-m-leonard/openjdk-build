@@ -35,10 +35,11 @@ jobs:
   codefreeze_if_branch_match_print:
     runs-on: ubuntu-latest
     needs: codefreeze_branch_check
-    run: |
-      echo "MATCH ? $MATCHES"
-    env:
-      MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches  }}
+    steps:
+      run: |
+        echo "MATCH ? $MATCHES"
+      env:
+        MATCHES: ${{ needs.codefreeze_branch_check.outputs.regex-matches  }}
 
   #codefreeze_if_branch_match:
   #  needs: codefreeze_branch_check
