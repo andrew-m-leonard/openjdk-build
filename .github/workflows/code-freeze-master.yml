@@ -150,7 +150,7 @@ jobs:
   thaw:
     needs: freeze
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'adoptium' && github.event_name == 'issue_comment' && always() && needs.freeze.result == 'skipped'
+    if: github.repository_owner == 'andrew-m-leonard' && github.event_name == 'issue_comment' && always() && needs.freeze.result == 'skipped'
     steps:
       - uses: khan/pull-request-comment-trigger@edab8d9ba7759221187ef7120592a6fbfada0d18 # v1.1.0
         id: thaw
