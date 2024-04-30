@@ -32,6 +32,16 @@ jobs:
     with:
       branch-regex: "^ma.*er$"
 
+  codefreeze_if_branch_match_print:
+    needs: codefreeze_branch_check
+    runs-on: ubuntu-latest
+    steps:
+      - name: print
+        run: |
+          echo "matches = $REG_MATCH"
+        env:
+          REG_MATCH: ${{ needs.codefreeze_branch_check.outputs.regex-matches }}
+
   codefreeze_if_branch_match:
     needs: codefreeze_branch_check
     uses: andrew-m-leonard/openjdk-build/.github/workflows/code-freeze-master.yml@master
