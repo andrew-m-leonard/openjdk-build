@@ -1,5 +1,6 @@
 <!-- textlint-disable terminology -->
 # Temurin Release Guide
+# sdfsdff
 
 Don't be scared off by this document! If you already understand the stuff in the glossary section and are only working on a HotSpot release, then skip to [Steps for every version](#steps-for-every-version) later on.
 
