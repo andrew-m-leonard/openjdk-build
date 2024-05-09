@@ -37,7 +37,7 @@ jobs:
     steps:
       - name: print
         run: |
-          echo "matches = $REG_MATCH"
+          echo "mmmmmatches = $REG_MATCH"
         env:
           REG_MATCH: ${{ needs.codefreeze_branch_check.outputs.regex-matches }}
 
