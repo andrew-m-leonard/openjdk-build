@@ -127,13 +127,13 @@ else
   export CONFIGURE_ARGS_FOR_ANY_PLATFORM="${CONFIGURE_ARGS_FOR_ANY_PLATFORM} DF=/usr/sysv/bin/df"
 fi
 
-if [ "$JAVA_FEATURE_VERSION" -le 21 ] && [ "$JAVA_FEATURE_VERSION" -ge 11 ]; then
+if [ "$JAVA_FEATURE_VERSION" -le 20 ] && [ "$JAVA_FEATURE_VERSION" -ge 11 ]; then
   export LANG=C
   export PATH=/opt/freeware/bin:$JAVA_HOME/bin:/usr/local/bin:/opt/IBM/xlC/16.1.0/bin:/opt/IBM/xlc/16.1.0/bin:$PATH
   export CC=xlclang
   export CXX=xlclang++
 fi
-if [ "$JAVA_FEATURE_VERSION" -ge 22 ]; then
+if [ "$JAVA_FEATURE_VERSION" -ge 21 ]; then
   export PATH=/opt/freeware/bin:$JAVA_HOME/bin:/usr/local/bin:/opt/IBM/openxlC/17.1.1/bin:$PATH
   export EXTRA_PATH=/opt/IBM/openxlC/17.1.1/tools
   export TOOLCHAIN_TYPE="clang"
