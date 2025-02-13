@@ -159,7 +159,7 @@ configureReproducibleBuildParameter() {
 
       # Ensure reproducible and comparable binary with a unique build user identifier
       addConfigureArg "--with-build-user=" "admin"
-      if [ "${BUILD_CONFIG[OS_KERNEL_NAME]}"  == "aix" ] && [ "${BUILD_CONFIG[OPENJDK_FEATURE_NUMBER]}" -lt 22 ]; then
+      if [ "${BUILD_CONFIG[OS_KERNEL_NAME]}"  == "aix" ] && [ "${BUILD_CONFIG[OPENJDK_FEATURE_NUMBER]}" -lt 21 ]; then
          addConfigureArg "--with-extra-cflags=" "-qnotimestamps"
          addConfigureArg "--with-extra-cxxflags=" "-qnotimestamps"
       fi
