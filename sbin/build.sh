@@ -161,7 +161,7 @@ configureReproducibleBuildParameter() {
       addConfigureArg "--with-build-user=" "admin"
       if [ "${BUILD_CONFIG[OS_KERNEL_NAME]}"  == "aix" ] && [ "${BUILD_CONFIG[OPENJDK_FEATURE_NUMBER]}" -lt 22 ]; then
          addConfigureArg "--with-extra-cflags=" "'-qnotimestamps -std=gnu11'"
-         addConfigureArg "--with-extra-cxxflags=" "'-qnotimestamps -std=gnu11'"
+         addConfigureArg "--with-extra-cxxflags=" "-qnotimestamps"
       fi
   fi
 }
