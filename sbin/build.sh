@@ -692,7 +692,7 @@ buildTemplatedFile() {
   echo "Currently at '${PWD}'"
 
   if [[ "${BUILD_CONFIG[ASSEMBLE_EXPLODED_IMAGE]}" != "true" ]]; then
-    FULL_CONFIGURE="bash ${BUILD_CONFIG[WORKSPACE_DIR]}/${BUILD_CONFIG[WORKING_DIR]}/${BUILD_CONFIG[OPENJDK_SOURCE_DIR]}/configure --verbose ${CONFIGURE_ARGS}"
+    FULL_CONFIGURE="PATH=/usr/bin:$PATH bash ${BUILD_CONFIG[WORKSPACE_DIR]}/${BUILD_CONFIG[WORKING_DIR]}/${BUILD_CONFIG[OPENJDK_SOURCE_DIR]}/configure --verbose ${CONFIGURE_ARGS}"
     echo "Running ${BUILD_CONFIG[WORKSPACE_DIR]}/${BUILD_CONFIG[WORKING_DIR]}/${BUILD_CONFIG[OPENJDK_SOURCE_DIR]}/configure with arguments '${FULL_CONFIGURE}'"
   else
     FULL_CONFIGURE="echo \"Skipping configure because we're assembling an exploded image\""
@@ -716,11 +716,11 @@ buildTemplatedFile() {
     ADDITIONAL_MAKE_TARGETS=""
   fi
 
-  FULL_MAKE_COMMAND="${BUILD_CONFIG[MAKE_COMMAND_NAME]} ${BUILD_CONFIG[MAKE_ARGS_FOR_ANY_PLATFORM]} ${BUILD_CONFIG[USER_SUPPLIED_MAKE_ARGS]} ${ADDITIONAL_MAKE_TARGETS}"
+  FULL_MAKE_COMMAND="PATH=/usr/bin:$PATH ${BUILD_CONFIG[MAKE_COMMAND_NAME]} ${BUILD_CONFIG[MAKE_ARGS_FOR_ANY_PLATFORM]} ${BUILD_CONFIG[USER_SUPPLIED_MAKE_ARGS]} ${ADDITIONAL_MAKE_TARGETS}"
 
   if [[ "${BUILD_CONFIG[ASSEMBLE_EXPLODED_IMAGE]}" == "true" ]]; then
     # This is required so that make will only touch the jmods and not re-compile them after signing
-    FULL_MAKE_COMMAND="make -t \&\& ${FULL_MAKE_COMMAND}"
+    FULL_MAKE_COMMAND="PATH=/usr/bin:$PATH make -t \&\& ${FULL_MAKE_COMMAND}"
   fi
 
   if [[ "${BUILD_CONFIG[ENABLE_SBOM_STRACE]}" == "true" ]]; then
