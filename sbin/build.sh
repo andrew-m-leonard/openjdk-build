@@ -690,6 +690,7 @@ buildTemplatedFile() {
   stepIntoTheOpenJDKBuildRootDirectory
 
   echo "Currently at '${PWD}'"
+echo $PATH
   export PATH=/usr/bin:$PATH
 which make
 make --version
