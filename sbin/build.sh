@@ -815,6 +815,7 @@ codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_libs
 codesign -dv --verbose=4 build/macosx-x86_64-server-release/images/jdk/lib/libfreetype.dylib
 
 codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_cmds/jdk.jcmd/jcmd
+codesign -dv --verbose=4 build/macosx-x86_64-server-release/images/jdk/bin/jcmd
 
   if [ "${exitCode}" -eq 3 ]; then
     createOpenJDKFailureLogsArchive
