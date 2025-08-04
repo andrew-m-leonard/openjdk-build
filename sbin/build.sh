@@ -724,7 +724,10 @@ buildTemplatedFile() {
     # To work around jdk-25+ bug https://bugs.openjdk.org/browse/JDK-8363942,
     # GNU make version 4.4+ is required, along with removal of make artifact create-main-targets-include,
     # to force target regeneration.
-    FULL_MAKE_COMMAND="make -t \&\& rm -f create-main-targets-include \&\& ${FULL_MAKE_COMMAND}"
+    #FULL_MAKE_COMMAND="make -t \&\& rm -f create-main-targets-include \&\& ${FULL_MAKE_COMMAND}"
+    echo "ASSEMBLE EXPLODED!"
+ls -l build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
   fi
 
   if [[ "${BUILD_CONFIG[ENABLE_SBOM_STRACE]}" == "true" ]]; then
@@ -805,6 +808,9 @@ executeTemplatedFile() {
   # Execute the build passing the workspace dir and target dir as params for configure.txt
   bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]}
   exitCode=$?
+
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/images/jdk/lib/libfreetype.dylib
 
   if [ "${exitCode}" -eq 3 ]; then
     createOpenJDKFailureLogsArchive
