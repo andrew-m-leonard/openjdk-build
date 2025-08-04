@@ -726,10 +726,10 @@ buildTemplatedFile() {
     # to force target regeneration.
     #FULL_MAKE_COMMAND="make -t \&\& rm -f create-main-targets-include \&\& ${FULL_MAKE_COMMAND}"
     echo "ASSEMBLE EXPLODED!"
-ls -l build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
-ls -l build/macosx-x86_64-server-release/support/modules_cmds/jdk.jcmd/jcmd
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_cmds/jdk.jcmd/jcmd
+ls -l build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+ls -l build/macosx-aarch64-server-release/support/modules_cmds/jdk.jcmd/jcmd
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_cmds/jdk.jcmd/jcmd
   fi
 
   if [[ "${BUILD_CONFIG[ENABLE_SBOM_STRACE]}" == "true" ]]; then
@@ -811,11 +811,11 @@ executeTemplatedFile() {
   bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]}
   exitCode=$?
 
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/images/jdk/lib/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/images/jdk/lib/libfreetype.dylib
 
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_cmds/jdk.jcmd/jcmd
-codesign -dv --verbose=4 build/macosx-x86_64-server-release/images/jdk/bin/jcmd
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/support/modules_cmds/jdk.jcmd/jcmd
+codesign -dv --verbose=4 build/macosx-aarch64-server-release/images/jdk/bin/jcmd
 
   if [ "${exitCode}" -eq 3 ]; then
     createOpenJDKFailureLogsArchive
