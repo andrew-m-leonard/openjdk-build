@@ -726,8 +726,8 @@ buildTemplatedFile() {
     # to force target regeneration.
     #FULL_MAKE_COMMAND="make -t \&\& rm -f create-main-targets-include \&\& ${FULL_MAKE_COMMAND}"
     echo "ASSEMBLE EXPLODED!"
-ls -l build/macosx-x64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
-codesign -dv --verbose=4 build/macosx-x64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+ls -l build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
   fi
 
   if [[ "${BUILD_CONFIG[ENABLE_SBOM_STRACE]}" == "true" ]]; then
@@ -809,8 +809,8 @@ executeTemplatedFile() {
   bash "${BUILD_CONFIG[WORKSPACE_DIR]}/config/configure-and-build.sh" ${BUILD_CONFIG[WORKSPACE_DIR]} ${BUILD_CONFIG[TARGET_DIR]}
   exitCode=$?
 
-codesign -dv --verbose=4 build/macosx-x64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
-codesign -dv --verbose=4 build/macosx-x64-server-release/images/jdk/lib/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-x86_64-server-release/support/modules_libs/java.desktop/libfreetype.dylib
+codesign -dv --verbose=4 build/macosx-x86_64-server-release/images/jdk/lib/libfreetype.dylib
 
   if [ "${exitCode}" -eq 3 ]; then
     createOpenJDKFailureLogsArchive
