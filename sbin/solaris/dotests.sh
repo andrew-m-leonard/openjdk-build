@@ -94,7 +94,7 @@ if [ ! -d "aqa-tests" ]; then
 fi
 cd aqa-tests || exit 1
 git reset --hard origin/$AQA_BRANCH || exit 1
-git clean -fdx || exit 1
+git clean -xfdff || exit 1
 
 env
 # TODO: Check if this actually exists
