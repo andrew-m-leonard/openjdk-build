@@ -47,7 +47,8 @@ fi
 set -x
 rm -rf $HOME/workspace && mkdir $HOME/workspace && WORKSPACE=$HOME/workspace && export WORKSPACE
 pwd
-UNZIPPED_ARTIFACTS=`pwd`/unzipped_artifacts
+HOME_DIR=`pwd`
+UNZIPPED_ARTIFACTS=$HOME_DIR/unzipped_artifacts
 if [ ! "$4" = "usecache" ]; then
   if [ -z "${UPSTREAM_JOBLINK}" ]; then
     # Jenkins simpletest job will copy the artifacts to this location
@@ -64,7 +65,7 @@ if [ ! "$4" = "usecache" ]; then
     curl -O "${UPSTREAM_JOBLINK}/artifact/workspace/target/$JDK_TARBALL_NAME" || exit 1
   fi
   rm -rf $UNZIPPED_ARTIFACTS && mkdir -p $UNZIPPED_ARTIFACTS || exit 1
-  gzip -cd "$JDK_TARBALL_NAME" | tar xpf - -C $UNZIPPED_ARTIFACTS
+  cd $UNZIPPED_ARTIFACTS && gzip -cd "$JDK_TARBALL_NAME" | tar xpf -
   echo Downloading and extracting JRE tarball ... Required for special.openjdk jdk_math_jre_0 target
   JRE_TARBALL_NAME="`echo $JDK_TARBALL_NAME | sed s/jdk/jre/`"
   if [ "$AQA_SUITE" = "special" ]; then
@@ -72,11 +73,12 @@ if [ ! "$4" = "usecache" ]; then
       if [ "${UPSTREAM_JOBLINK}" != "" ]; then
         curl -O "${UPSTREAM_JOBLINK}/artifact/workspace/target/$JRE_TARBALL_NAME" || exit 1
       fi
-      gzip -cd "$JRE_TARBALL_NAME" | tar xpf - -C $UNZIPPED_ARTIFACTS
+      cd $UNZIPPED_ARTIFACTS && gzip -cd "$JRE_TARBALL_NAME" | tar xpf -
     fi
   fi
 fi
 
+cd $HOME_DIR || exit 1
 PWD=`pwd`
 TEST_JDK_HOME=""
 JRE_IMAGE=""
