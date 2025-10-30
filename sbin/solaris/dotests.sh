@@ -89,6 +89,7 @@ for FILE in "$UNZIPPED_ARTIFACTS"/jdk8u*; do
 done
 
 # Clone and reset aqa-tests to release branch
+rm -rf "aqa-tests"
 if [ ! -d "aqa-tests" ]; then
   git clone https://github.com/adoptium/aqa-tests
 fi
