@@ -19,9 +19,16 @@
 # an accessible job name specified as UPSTREAM_JOBLINK e.g.
 # https://ci.adoptium.net/job/build-scripts/job/jobs/job/jdk8u/job/jdk8u-solaris-x64-temurin-simplepipe/167
 #
-# Requires two parameters for the name of the test suite to run e.g.
-# ./dotests.sh sanity openjdk
+# Requires three parameters for the name of the test suite to run and aqa-tests release branch. e.g.
+# ./dotests.sh sanity openjdk v1.0.10-release
 #
+
+if [ $# -lt 3 ]; then
+  echo "ERROR: Missing parameter, syntax: dotests.sh <test suite> <test group> <aqa-tests release branch>
+  exit 1
+fi
+
+AQA_BRANCH="$3"
 
 # Check for Xvfb on display :5
 XVFB5=`ps -fu vagrant | awk '/Xvfb :5/ && !/awk/ {c=c+1} END {print c+0}'`
@@ -38,11 +45,8 @@ fi
 set -x
 rm -rf $HOME/workspace && mkdir $HOME/workspace && WORKSPACE=$HOME/workspace && export WORKSPACE
 pwd
-if [ "$3" = "usecache" ]; then
-  cd aqa-tests || exit 1
-else
-  rm -rf aqa-tests
-  git clone https://github.com/adoptium/aqa-tests
+UNZIPPED_ARTIFACTS=`pwd`/unzipped_artifacts
+if [ ! "$4" = "usecache" ]; then
   if [ -z "${UPSTREAM_JOBLINK}" ]; then
     # Jenkins simpletest job will copy the artifacts to this location
     if [ ! -r "build_artifacts/filenames.txt" ]; then
@@ -57,8 +61,8 @@ else
     echo Downloading and extracting JDK tarball ...
     curl -O "${UPSTREAM_JOBLINK}/artifact/workspace/target/$JDK_TARBALL_NAME" || exit 1
   fi
-  cd aqa-tests || exit 1
-  gzip -cd "$JDK_TARBALL_NAME" | tar xpf -
+  rm -rf $UNZIPPED_ARTIFACTS && mkdir -p $UNZIPPED_ARTIFACTS || exit 1
+  gzip -cd "$JDK_TARBALL_NAME" | tar xpf - -C $UNZIPPED_ARTIFACTS
   echo Downloading and extracting JRE tarball ... Required for special.openjdk jdk_math_jre_0 target
   JRE_TARBALL_NAME="`echo $JDK_TARBALL_NAME | sed s/jdk/jre/`"
   if [ "$1" = "special" ]; then
@@ -66,17 +70,27 @@ else
       if [ "${UPSTREAM_JOBLINK}" != "" ]; then
         curl -O "${UPSTREAM_JOBLINK}/artifact/workspace/target/$JRE_TARBALL_NAME" || exit 1
       fi
-      gzip -cd "$JRE_TARBALL_NAME" | tar xpf -
+      gzip -cd "$JRE_TARBALL_NAME" | tar xpf - -C $UNZIPPED_ARTIFACTS
     fi
   fi
 fi
+
 PWD=`pwd`
 TEST_JDK_HOME=""
 JRE_IMAGE=""
-for FILE in "$PWD"/jdk8u*; do
+for FILE in "$UNZIPPED_ARTIFACTS"/jdk8u*; do
   [ "`echo "$FILE" | grep -v jre`" ] && TEST_JDK_HOME="$FILE"
   [ "`echo "$FILE" | grep jre`" ] && JRE_IMAGE="$FILE"
 done
+
+# Clone and reset aqa-tests to release branch
+if [ ! -d "aqa-tests" ]; then
+  git clone https://github.com/adoptium/aqa-tests
+fi
+cd aqa-tests || exit 1
+git reset --hard origin/$AQA_BRANCH || exit 1
+git clean -fd || exit 1
+
 env
 # TODO: Check if this actually exists
 [ -z "$TEST_JDK_HOME" ] && echo "Could not resolve TEST_JDK_HOME - aborting" && exit 1
@@ -98,7 +112,7 @@ fi
 # Remove xpg4 from path as stf.pl fails to parse the xpg4 df output
 PATH=/usr/local/bin:/opt/csw/bin:`echo $PATH | sed 's,/usr/xpg4/bin,,g'`
 export TEST_JDK_HOME BUILD_LIST PATH JRE_IMAGE
-[ "$3" != "usecache" ] && ./get.sh ${GET_SH_PARAMS}
+[ "$4" != "usecache" ] && ./get.sh ${GET_SH_PARAMS}
 cd TKG || exit 1
 (echo VENDOR OPTIONS = $VENDOR_TEST_REPOS / $VENDOR_TEST_DIRS / $VENDOR_TEST_BRANCHES)
 gmake compile
