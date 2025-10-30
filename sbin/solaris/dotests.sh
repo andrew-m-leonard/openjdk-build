@@ -89,7 +89,6 @@ for FILE in "$UNZIPPED_ARTIFACTS"/jdk8u*; do
 done
 
 # Clone and reset aqa-tests to release branch
-rm -rf "aqa-tests"
 if [ ! -d "aqa-tests" ]; then
   git clone https://github.com/adoptium/aqa-tests
 fi
@@ -111,7 +110,8 @@ fi
 GET_SH_PARAMS=""
 if [ "$AQA_SUITE" = "smoke" ]; then
   # shellcheck disable=SC2121
-  set extended functional
+  AQA_SUITE="extended"
+  AQA_BUILDLIST="functional"
   GET_SH_PARAMS="--vendor_repos https://github.com/adoptium/temurin-build --vendor_branches master --vendor_dirs /test/functional"
   BUILD_LIST=functional/buildAndPackage
 fi
