@@ -19,16 +19,18 @@
 # an accessible job name specified as UPSTREAM_JOBLINK e.g.
 # https://ci.adoptium.net/job/build-scripts/job/jobs/job/jdk8u/job/jdk8u-solaris-x64-temurin-simplepipe/167
 #
-# Requires three parameters for the name of the test suite to run and aqa-tests release branch. e.g.
-# ./dotests.sh sanity openjdk v1.0.10-release
+# Requires three parameters for the aqa release branch, name of the test suite and group to run. e.g.
+# ./dotests.sh v1.0.10-release sanity openjdk
 #
 
 if [ $# -lt 3 ]; then
-  echo "ERROR: Missing parameter, syntax: dotests.sh <test suite> <test group> <aqa-tests release branch>
+  echo "ERROR: Missing parameter, syntax: dotests.sh <aqa-tests release branch> <test suite> <test group>"
   exit 1
 fi
 
-AQA_BRANCH="$3"
+AQA_BRANCH="$1"
+AQA_SUITE="$2"
+AQA_BUILDLIST="$3"
 
 # Check for Xvfb on display :5
 XVFB5=`ps -fu vagrant | awk '/Xvfb :5/ && !/awk/ {c=c+1} END {print c+0}'`
@@ -65,8 +67,8 @@ if [ ! "$4" = "usecache" ]; then
   gzip -cd "$JDK_TARBALL_NAME" | tar xpf - -C $UNZIPPED_ARTIFACTS
   echo Downloading and extracting JRE tarball ... Required for special.openjdk jdk_math_jre_0 target
   JRE_TARBALL_NAME="`echo $JDK_TARBALL_NAME | sed s/jdk/jre/`"
-  if [ "$1" = "special" ]; then
-    if [ "$2" = "openjdk" ]; then
+  if [ "$AQA_SUITE" = "special" ]; then
+    if [ "$AQA_BUILDLIST" = "openjdk" ]; then
       if [ "${UPSTREAM_JOBLINK}" != "" ]; then
         curl -O "${UPSTREAM_JOBLINK}/artifact/workspace/target/$JRE_TARBALL_NAME" || exit 1
       fi
@@ -96,7 +98,7 @@ env
 [ -z "$TEST_JDK_HOME" ] && echo "Could not resolve TEST_JDK_HOME - aborting" && exit 1
 echo TEST_JDK_HOME=$TEST_JDK_HOME
 "$TEST_JDK_HOME/bin/java" -version || exit 1
-BUILD_LIST=$2
+BUILD_LIST=$AQA_BUILDLIST
 if [ "$BUILD_LIST" = "system" ]; then
   mkdir -p "`pwd`/systemtest_prereqs/mauve" # systemtest_preqeqs not created til compile phase
   curl -o "`pwd`/systemtest_prereqs/mauve/mauve.jar" \
