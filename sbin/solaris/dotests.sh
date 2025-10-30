@@ -31,6 +31,7 @@ fi
 AQA_BRANCH="$1"
 AQA_SUITE="$2"
 AQA_BUILDLIST="$3"
+USE_CACHE="$4"
 
 # Check for Xvfb on display :5
 XVFB5=`ps -fu vagrant | awk '/Xvfb :5/ && !/awk/ {c=c+1} END {print c+0}'`
@@ -49,7 +50,7 @@ rm -rf $HOME/workspace && mkdir $HOME/workspace && WORKSPACE=$HOME/workspace && 
 pwd
 HOME_DIR=`pwd`
 UNZIPPED_ARTIFACTS=$HOME_DIR/unzipped_artifacts
-if [ ! "$4" = "usecache" ]; then
+if [ ! "$USE_CACHE" = "usecache" ]; then
   if [ -z "${UPSTREAM_JOBLINK}" ]; then
     # Jenkins simpletest job will copy the artifacts to this location
     if [ ! -r "build_artifacts/filenames.txt" ]; then
@@ -107,7 +108,7 @@ if [ "$BUILD_LIST" = "system" ]; then
 	https://ci.adoptium.net/job/systemtest.getDependency/lastSuccessfulBuild/artifact/systemtest_prereqs/mauve/mauve.jar
 fi
 GET_SH_PARAMS=""
-if [ "$1" = "smoke" ]; then
+if [ "$AQA_SUITE" = "smoke" ]; then
   # shellcheck disable=SC2121
   set extended functional
   GET_SH_PARAMS="--vendor_repos https://github.com/adoptium/temurin-build --vendor_branches master --vendor_dirs /test/functional"
@@ -116,10 +117,10 @@ fi
 # Remove xpg4 from path as stf.pl fails to parse the xpg4 df output
 PATH=/usr/local/bin:/opt/csw/bin:`echo $PATH | sed 's,/usr/xpg4/bin,,g'`
 export TEST_JDK_HOME BUILD_LIST PATH JRE_IMAGE
-[ "$4" != "usecache" ] && ./get.sh ${GET_SH_PARAMS}
+[ "$USE_CACHE" != "usecache" ] && ./get.sh ${GET_SH_PARAMS}
 cd TKG || exit 1
 (echo VENDOR OPTIONS = $VENDOR_TEST_REPOS / $VENDOR_TEST_DIRS / $VENDOR_TEST_BRANCHES)
 gmake compile
-echo SXAEC: Running gmake _$1.$2 from "`pwd`"
+echo SXAEC: Running gmake _$AQA_SUITE.$AQA_BUILDLIST from "`pwd`"
 DISPLAY=:5; export DISPLAY
-gmake _$1.$2 2>&1 | tee $1.$2.$$.log
+gmake _$AQA_SUITE.$AQA_BUILDLIST 2>&1 | tee $AQA_SUITE.$AQA_BUILDLIST.$$.log
