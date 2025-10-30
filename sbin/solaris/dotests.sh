@@ -19,12 +19,12 @@
 # an accessible job name specified as UPSTREAM_JOBLINK e.g.
 # https://ci.adoptium.net/job/build-scripts/job/jobs/job/jdk8u/job/jdk8u-solaris-x64-temurin-simplepipe/167
 #
-# Requires three parameters for the aqa release branch, name of the test suite and group to run. e.g.
+# Requires at least two parameters for the aqa release branch, name of the test suite and optional group to run. e.g.
 # ./dotests.sh v1.0.10-release sanity openjdk
 #
 
-if [ $# -lt 3 ]; then
-  echo "ERROR: Missing parameter, syntax: dotests.sh <aqa-tests release branch> <test suite> <test group>"
+if [ $# -lt 2 ]; then
+  echo "ERROR: Missing parameter, syntax: dotests.sh <aqa-tests release branch> <test suite> [test group] [usecache]"
   exit 1
 fi
 
