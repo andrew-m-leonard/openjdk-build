@@ -98,7 +98,7 @@ fi
 # Remove xpg4 from path as stf.pl fails to parse the xpg4 df output
 PATH=/usr/local/bin:/opt/csw/bin:`echo $PATH | sed 's,/usr/xpg4/bin,,g'`
 export TEST_JDK_HOME BUILD_LIST PATH JRE_IMAGE
-[ "$3" != "usecache" ] && ./get.sh ${GET_SH_PARAMS}
+[ "$3" != "usecache" ] && ./get.sh ${GET_SH_PARAMS} --tkg_repo https://github.com/andrew-m-leonard/TKG --tkg_branch solaris_download
 cd TKG || exit 1
 (echo VENDOR OPTIONS = $VENDOR_TEST_REPOS / $VENDOR_TEST_DIRS / $VENDOR_TEST_BRANCHES)
 gmake compile
