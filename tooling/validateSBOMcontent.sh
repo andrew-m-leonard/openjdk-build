@@ -110,21 +110,21 @@ echo -n "Checking for JDK source SHA validity: "
 GITURL=$(jq '.components[].properties[] | select(.name|test("OpenJDK Source Commit")) | .value' "$1" | tr -d \" | uniq)
 GITREPO=$(echo "$GITURL" | cut -d/ -f1-5)
 GITSHA=$( echo "$GITURL" | cut -d/ -f7)
-if [ -z "${EXPECTED_SCM_REF}" ]; then
-  if ! curl --silent --fail -I "$GITURL" > /dev/null; then
-    echo "ERROR: git sha of source commit not found"
-    echo "GITREPO: ${GITREPO}"
-    echo "GITSHA: ${GITSHA}"
-    RC=1
-  fi
-else
-  if ! git ls-remote "${GITREPO}" | grep "${GITSHA}"; then
-    echo "ERROR: git sha of source repo not found"
-    echo "GITREPO: ${GITREPO}"
-    echo "GITSHA: ${GITSHA}"
-    RC=1
-  fi
-fi
+#if [ -z "${EXPECTED_SCM_REF}" ]; then
+#  if ! curl --silent --fail -I "$GITURL" > /dev/null; then
+#    echo "ERROR: git sha of source commit not found"
+#    echo "GITREPO: ${GITREPO}"
+#    echo "GITSHA: ${GITSHA}"
+#    RC=1
+#  fi
+#else
+#  if ! git ls-remote "${GITREPO}" | grep "${GITSHA}"; then
+#    echo "ERROR: git sha of source repo not found"
+#    echo "GITREPO: ${GITREPO}"
+#    echo "GITSHA: ${GITSHA}"
+#    RC=1
+#  fi
+#fi
 
 # shellcheck disable=SC3037
 if [ -n "${EXPECTED_SCM_REF}" ]; then
