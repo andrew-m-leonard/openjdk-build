@@ -416,6 +416,8 @@ updateOpenj9Sources() {
 
 # Clone the git repo
 cloneOpenJDKGitRepo() {
+echo "PATH=$PATH"
+printenv
 which git
 git --version
   setGitCloneArguments
