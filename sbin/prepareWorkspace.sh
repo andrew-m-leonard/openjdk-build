@@ -416,6 +416,8 @@ updateOpenj9Sources() {
 
 # Clone the git repo
 cloneOpenJDKGitRepo() {
+which git
+git --version
   setGitCloneArguments
 
   echo "git clone ${GIT_CLONE_ARGUMENTS[*]}"
