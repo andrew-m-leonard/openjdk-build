@@ -180,8 +180,8 @@ checkAllVariablesSet() {
   fi
 }
 
-installPrereqs
-downloadAnt
+#installPrereqs
+#downloadAnt
 
 if [[ $SBOM_PARAM =~ ^https?:// ]]; then
   echo "Retrieving and parsing SBOM from $SBOM_PARAM"
