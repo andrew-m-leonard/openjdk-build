@@ -43,6 +43,7 @@ installPrereqs() {
         sed -i 's|#baseurl=http://mirror.centos.org/|baseurl=http://vault.centos.org/|' /etc/yum.repos.d/CentOS-Linux-*.repo
       fi
       yum install -y diffutils
+      yum install -y gnupg
     fi
     yum install -y procps-ng binutils cpio
     yum install -y make autoconf unzip zip file systemtap-sdt-devel
