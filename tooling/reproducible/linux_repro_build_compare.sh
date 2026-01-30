@@ -191,13 +191,72 @@ else
   SBOM=$SBOM_PARAM
 fi
 
-BOOTJDK_VERSION=$(jq -r '.metadata.tools.components[] | select(.name == "BOOTJDK") | .version' "$SBOM" | sed -e 's#-LTS$##')
-GCCVERSION=$(jq -r '.metadata.tools.components[] | select(.name == "GCC") | .version' "$SBOM" | sed 's/.0$//')
+#BOOTJDK_VERSION=$(jq -r '.metadata.tools.components[] | select(.name == "BOOTJDK") | .version' "$SBOM" | sed -e 's#-LTS$##')
+#GCCVERSION=$(jq -r '.metadata.tools.components[] | select(.name == "GCC") | .version' "$SBOM" | sed 's/.0$//')
+#LOCALGCCDIR=/usr/local/gcc$(echo "$GCCVERSION" | cut -d. -f1)
+#TEMURIN_BUILD_SHA=$(jq -r '.components[0] | .properties[] | select (.name == "Temurin Build Ref") | .value' "$SBOM" | awk -F/ '{print $NF}')
+#TEMURIN_VERSION=$(jq -r '.metadata.component.version' "$SBOM" | sed 's/-beta//' | cut -f1 -d"-")
+#BUILDSTAMP=$(jq -r '.components[0].properties[] | select(.name == "Build Timestamp") | .value' "$SBOM")
+#TEMURIN_BUILD_ARGS=$(jq -r '.components[0] | .properties[] | select (.name == "makejdk_any_platform_args") | .value' "$SBOM")
+
+BOOTJDK_VERSION=$(python3 -c "
+import json, sys
+with open('$SBOM') as f:
+    data = json.load(f)
+    for comp in data['metadata']['tools']['components']:
+        if comp['name'] == 'BOOTJDK':
+            print(comp['version'])
+            break
+" | sed -e 's#-LTS$##')
+
+GCCVERSION=$(python3 -c "
+import json
+with open('$SBOM') as f:
+    data = json.load(f)
+    for comp in data['metadata']['tools']['components']:
+        if comp['name'] == 'GCC':
+            print(comp['version'])
+            break
+" | sed 's/.0$//')
+
 LOCALGCCDIR=/usr/local/gcc$(echo "$GCCVERSION" | cut -d. -f1)
-TEMURIN_BUILD_SHA=$(jq -r '.components[0] | .properties[] | select (.name == "Temurin Build Ref") | .value' "$SBOM" | awk -F/ '{print $NF}')
-TEMURIN_VERSION=$(jq -r '.metadata.component.version' "$SBOM" | sed 's/-beta//' | cut -f1 -d"-")
-BUILDSTAMP=$(jq -r '.components[0].properties[] | select(.name == "Build Timestamp") | .value' "$SBOM")
-TEMURIN_BUILD_ARGS=$(jq -r '.components[0] | .properties[] | select (.name == "makejdk_any_platform_args") | .value' "$SBOM")
+
+TEMURIN_BUILD_SHA=$(python3 -c "
+import json
+with open('$SBOM') as f:
+    data = json.load(f)
+    for prop in data['components'][0]['properties']:
+        if prop['name'] == 'Temurin Build Ref':
+            print(prop['value'].split('/')[-1])
+            break
+")
+
+TEMURIN_VERSION=$(python3 -c "
+import json
+with open('$SBOM') as f:
+    data = json.load(f)
+    print(data['metadata']['component']['version'])
+" | sed 's/-beta//' | cut -f1 -d"-")
+
+BUILDSTAMP=$(python3 -c "
+import json
+with open('$SBOM') as f:
+    data = json.load(f)
+    for prop in data['components'][0]['properties']:
+        if prop['name'] == 'Build Timestamp':
+            print(prop['value'])
+            break
+")
+
+TEMURIN_BUILD_ARGS=$(python3 -c "
+import json
+with open('$SBOM') as f:
+    data = json.load(f)
+    for prop in data['components'][0]['properties']:
+        if prop['name'] == 'makejdk_any_platform_args':
+            print(prop['value'])
+            break
+")
 
 # Remove any --with-jobs, let local user system determine
 # shellcheck disable=SC2001
