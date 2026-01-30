@@ -18,7 +18,7 @@
 	<include>reproducible.mk</include>
 	<test>
 		<testCaseName>Rebuild_Same_JDK_Reproducibility_Test</testCaseName>
-<command>bash $(TEST_RESROOT)/linux_repro_build_compare.sh $(SBOM_FILE) $(TEST_JDK_HOME)</command>
+<command>unset SPEC; bash $(TEST_RESROOT)/linux_repro_build_compare.sh $(SBOM_FILE) $(TEST_JDK_HOME)</command>
 		<levels>
 			<level>special</level>
 		</levels>
