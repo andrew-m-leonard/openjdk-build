@@ -199,20 +199,19 @@ fi
 #BUILDSTAMP=$(jq -r '.components[0].properties[] | select(.name == "Build Timestamp") | .value' "$SBOM")
 #TEMURIN_BUILD_ARGS=$(jq -r '.components[0] | .properties[] | select (.name == "makejdk_any_platform_args") | .value' "$SBOM")
 
-BOOTJDK_VERSION=$(perl -MJSON -0777 -ne '$d=decode_json($_); foreach(@{$d->{metadata}{tools}{components}}){print $_->{version} if $_->{name} eq "BOOTJDK"}' "$SBOM" | sed -e 's#-LTS$##')
+BOOTJDK_VERSION=$(python3 -c "import json; d=json.load(open('$SBOM')); print(next(c['version'] for c in d['metadata']['tools']['components'] if c['name']=='BOOTJDK'))" | sed -e 's#-LTS$##')
 
-GCCVERSION=$(perl -MJSON -0777 -ne '$d=decode_json($_); foreach(@{$d->{metadata}{tools}{components}}){print $_->{version} if $_->{name} eq "GCC"}' "$SBOM" | sed 's/.0$//')
+GCCVERSION=$(python3 -c "import json; d=json.load(open('$SBOM')); print(next(c['version'] for c in d['metadata']['tools']['components'] if c['name']=='GCC'))" | sed 's/.0$//')
 
 LOCALGCCDIR=/usr/local/gcc$(echo "$GCCVERSION" | cut -d. -f1)
 
-TEMURIN_BUILD_SHA=$(perl -MJSON -0777 -ne '$d=decode_json($_); foreach(@{$d->{components}[0]{properties}}){print((split("/", $_->{value}))[-1]) if $_->{name} eq "Temurin Build Ref"}' "$SBOM")
+TEMURIN_BUILD_SHA=$(python3 -c "import json; d=json.load(open('$SBOM')); print(next(p['value'].split('/')[-1] for p in d['components'][0]['properties'] if p['name']=='Temurin Build Ref'))")
 
-TEMURIN_VERSION=$(perl -MJSON -0777 -ne '$d=decode_json($_); print $d->{metadata}{component}{version}' "$SBOM" | sed 's/-beta//' | cut -f1 -d"-")
+TEMURIN_VERSION=$(python3 -c "import json; d=json.load(open('$SBOM')); print(d['metadata']['component']['version'])" | sed 's/-beta//' | cut -f1 -d"-")
 
-BUILDSTAMP=$(perl -MJSON -0777 -ne '$d=decode_json($_); foreach(@{$d->{components}[0]{properties}}){print $_->{value} if $_->{name} eq "Build Timestamp"}' "$SBOM")
+BUILDSTAMP=$(python3 -c "import json; d=json.load(open('$SBOM')); print(next(p['value'] for p in d['components'][0]['properties'] if p['name']=='Build Timestamp'))")
 
-TEMURIN_BUILD_ARGS=$(perl -MJSON -0777 -ne '$d=decode_json($_); foreach(@{$d->{components}[0]{properties}}){print $_->{value} if $_->{name} eq "makejdk_any_platform_args"}' "$SBOM")
-
+TEMURIN_BUILD_ARGS=$(python3 -c "import json; d=json.load(open('$SBOM')); print(next(p['value'] for p in d['components'][0]['properties'] if p['name']=='makejdk_any_platform_args'))")
 
 # Remove any --with-jobs, let local user system determine
 # shellcheck disable=SC2001
