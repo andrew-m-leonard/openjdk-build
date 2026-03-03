@@ -367,6 +367,11 @@ buildUsingTemurinBuild() {
 attestationBuildUsingOpenJDK() {
   echo "Building JDK using OpenJDK configure and make..."
 
+#/home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release
+#/home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
+mkdir -p /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+curr=$PWD
+cd /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
   echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into openjdk"
   git clone -q "$openjdkSourceRepo" "openjdk" || exit 1
   echo "Switching To OpenJDK tag : $openjdkSourceTag"
@@ -391,10 +396,11 @@ attestationBuildUsingOpenJDK() {
   cat openjdk/repro_build.log
 
   mv openjdk/build/*/images/jdk "openjdk/build/$openjdkSourceTag"
-  (cd openjdk/build && tar -czf ../../reproJDK.tar.gz "$openjdkSourceTag")
+  (cd openjdk/build && tar -czf $curr/reproJDK.tar.gz "$openjdkSourceTag")
+  cp  openjdk/repro_configure.log $curr/build.log
+  cat openjdk/repro_build.log  >> $curr/build.log
+cd $curr
   mkdir reproJDK && tar xpfz reproJDK.tar.gz -C reproJDK
-  cp  openjdk/repro_configure.log build.log
-  cat openjdk/repro_build.log  >> build.log
   cp "$SBOM" SBOM.json
 }
 
