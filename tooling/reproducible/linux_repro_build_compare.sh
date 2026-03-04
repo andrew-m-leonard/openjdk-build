@@ -369,9 +369,10 @@ attestationBuildUsingOpenJDK() {
 
 #/home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release
 #/home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
-mkdir -p /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+mkdir -p /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+#        /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
 curr=$PWD
-cd /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
+cd /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
   echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into openjdk"
   git clone -q "$openjdkSourceRepo" "openjdk" || exit 1
   echo "Switching To OpenJDK tag : $openjdkSourceTag"
