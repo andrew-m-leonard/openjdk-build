@@ -370,7 +370,7 @@ attestationBuildUsingOpenJDK() {
 #/home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release
 #/home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
 #local bdir="/home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
-local  bdir="/home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+local  bdir="/home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
 rm -rf "$bdir"
 mkdir -p "$bdir"
 #G  /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
@@ -383,6 +383,8 @@ cd  "$bdir"
 
 #   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/bin/java -Xshare:dump -XX:SharedArchiveFile=
 #   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/lib/server/classes.jsa -server -Xmx128M -Xms128M -XX:+UseG1GC
+
+#   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release
 
 local cloneDir="openjdk"
   echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into $cloneDir"
