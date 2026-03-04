@@ -369,41 +369,49 @@ attestationBuildUsingOpenJDK() {
 
 #/home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release
 #/home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
-mkdir -p /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-#        /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
+#local bdir="/home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"
+local bdir="/home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build"
+rm -rf "$bdir"
+mkdir -p "$bdir"
+#G  /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
 curr=$PWD
-cd  /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-#   /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
-#   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/bin/java
-#   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release
-#  /home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release/images/jdk/bin/java
-  echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into openjdk"
-  git clone -q "$openjdkSourceRepo" "openjdk" || exit 1
+cd  "$bdir"
+#G  /home/jenkins/workspace/Grinder/aqa-tests/TKG/output_17725764625126/Rebuild_Same_JDK_Reproducibility_Test_0/openjdk/build/linux-ppc64le-server-release
+#G  /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/bin/java
+#B  /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release
+#   /home/jenkins/workspace/build-scripts/jobs/jdk21u/jdk21u-linux-ppc64le-temurin/workspace/build/src/build/linux-ppc64le-server-release/images/jdk/bin/java
+
+#   /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/bin/java -Xshare:dump -XX:SharedArchiveFile=
+    /home/jenkins/workspace/Grinder/aqa-tests/RWSPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/openjdk/build/linux-ppc64le-server-release/images/jdk/lib/server/classes.jsa -server -Xmx128M -Xms128M -XX:+UseG1GC
+
+local cloneDir="src"
+  echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into $cloneDir"
+  git clone -q "$openjdkSourceRepo" "$cloneDir" || exit 1
   echo "Switching To OpenJDK tag : $openjdkSourceTag"
-  (cd "openjdk" && git checkout -q "$openjdkSourceTag")
+  (cd "$cloneDir" && git checkout -q "$openjdkSourceTag")
 
   echo "Executing: bash ./configure $adoptiumConfigureArgs"
-  if ! echo "cd openjdk && bash ./configure $adoptiumConfigureArgs > repro_configure.log 2>&1" | sh; then
-    cat openjdk/repro_configure.log || true
+  if ! echo "cd $cloneDir && bash ./configure $adoptiumConfigureArgs > repro_configure.log 2>&1" | sh; then
+    cat $cloneDir/repro_configure.log || true
     echo "OpenJDK configure failure, exiting"
     exit 1
   fi
 
-  cat openjdk/repro_configure.log
+  cat $cloneDir/repro_configure.log
 
   echo "Executing: make images"
-  if ! echo "cd openjdk/build/* && make images LOG_CMDLINES=true > ../../repro_build.log 2>&1" | sh; then
-    cat openjdk/repro_build.log || true
+  if ! echo "cd $cloneDir/build/* && make images > ../../repro_build.log 2>&1" | sh; then
+    cat "$cloneDir/repro_build.log" || true
     echo "OpenJDK make images failure, exiting"
     exit 1
   fi
 
-  cat openjdk/repro_build.log
+  cat "$cloneDir/repro_build.log"
 
-  mv openjdk/build/*/images/jdk "openjdk/build/$openjdkSourceTag"
-  (cd openjdk/build && tar -czf $curr/reproJDK.tar.gz "$openjdkSourceTag")
-  cp  openjdk/repro_configure.log $curr/build.log
-  cat openjdk/repro_build.log  >> $curr/build.log
+  mv "$cloneDir"/build/*/images/jdk "$cloneDir/build/$openjdkSourceTag"
+  (cd $cloneDir/build && tar -czf $curr/reproJDK.tar.gz "$openjdkSourceTag")
+  cp  $cloneDir/repro_configure.log $curr/build.log
+  cat $cloneDir/repro_build.log  >> $curr/build.log
 cd $curr
   mkdir reproJDK && tar xpfz reproJDK.tar.gz -C reproJDK
   cp "$SBOM" SBOM.json
