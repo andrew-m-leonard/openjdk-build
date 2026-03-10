@@ -569,7 +569,7 @@ attestationBuildUsingOpenJDK() {
   cat "$BUILD_DIR/$BUILD_FOLDER/repro_configure.log"
 
   echo "Executing: make images"
-  if ! echo "cd $BUILD_DIR/$BUILD_FOLDER/build/* && make images LOG=cmdline > ../../repro_build.log 2>&1" | sh; then
+  if ! echo "cd $BUILD_DIR/$BUILD_FOLDER/build/* && make images LOG=cmdlines > ../../repro_build.log 2>&1" | sh; then
     cat "$BUILD_DIR/$BUILD_FOLDER/repro_build.log" || true
     echo "OpenJDK make images failure, exiting"
     if [[ -n "$PATH_SAVE" ]]; then
