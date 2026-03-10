@@ -204,10 +204,10 @@ setTemurinBuildArgs() {
   local userDevkitLocation="$4"
   local buildScmRef="$5"
 
-  #local ignoreOptions=("--enable-sbom-strace ")
-  #for ignoreOption in "${ignoreOptions[@]}"; do
-  #  buildArgs="${buildArgs/${ignoreOption}/}"
-  #done
+  local ignoreOptions=("--enable-sbom-strace ")
+  for ignoreOption in "${ignoreOptions[@]}"; do
+    buildArgs="${buildArgs/${ignoreOption}/}"
+  done
 
   # set --build-reproducible-date if not yet
   if [[ "${buildArgs}" != *"--build-reproducible-date"* ]]; then
