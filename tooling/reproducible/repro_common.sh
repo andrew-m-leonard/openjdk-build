@@ -500,7 +500,7 @@ function cleanTemurinFiles() {
   echo "Removing any JDK image files not shipped by Temurin(*.pdb, *.pdb, *.debuginfo, demo) in $DIR"
   find "${DIR}" -type f -name "*.pdb" -delete
   find "${DIR}" -type f -name "*.map" -delete
-  find "${DIR}" -type f -name "*.debuginfo" -delete
+  #find "${DIR}" -type f -name "*.debuginfo" -delete
   rm -rf "${DIR}/demo"
 }
 
