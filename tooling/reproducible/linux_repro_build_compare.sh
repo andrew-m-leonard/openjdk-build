@@ -566,7 +566,7 @@ attestationBuildUsingOpenJDK() {
     exit 1
   fi
 
-cat "$BUILD_DIR/$BUILD_FOLDER"/build/*/spec.gmk
+cat /home/jenkins/workspace/Test_openjdk25_hs_special.system_ppc64le_linux_testList_0/aqa-tests/R/PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP/src/build/linux-ppc64le-server-release/spec.gmk
 
   cat "$BUILD_DIR/$BUILD_FOLDER/repro_configure.log"
 
