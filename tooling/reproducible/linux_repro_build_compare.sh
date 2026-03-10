@@ -566,6 +566,8 @@ attestationBuildUsingOpenJDK() {
     exit 1
   fi
 
+cat "$BUILD_DIR/$BUILD_FOLDER"/build/*/spec.gmk
+
   cat "$BUILD_DIR/$BUILD_FOLDER/repro_configure.log"
 
   echo "Executing: make images"
