@@ -1030,7 +1030,7 @@ createOpenJDKFailureLogsArchive() {
     fi
 
     # Find any cores, dumps, ..
-    find . -name 'core.*' -o -name 'core.*.dmp' -o -name 'javacore.*.txt' -o -name 'Snap.*.trc' -o -name 'jitdump.*.dmp' | sed 's#^./##' | while read -r dump ; do
+    find . -name 'config.log' -o 'core.*' -o -name 'core.*.dmp' -o -name 'javacore.*.txt' -o -name 'Snap.*.trc' -o -name 'jitdump.*.dmp' | sed 's#^./##' | while read -r dump ; do
       filedir=$(dirname "${dump}")
       echo "Copying ${dump} to ${adoptLogArchiveDir}/${filedir}"
       mkdir -p "${adoptLogArchiveDir}/${filedir}"
