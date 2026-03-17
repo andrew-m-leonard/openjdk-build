@@ -1002,6 +1002,8 @@ createOpenJDKFailureLogsArchive() {
       cd build/*
     fi
 
+/usr/bin/clang --version
+
     local adoptLogArchiveDir="TemurinLogsArchive"
 
     # Create new folder for failure logs
