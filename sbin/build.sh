@@ -1002,6 +1002,7 @@ createOpenJDKFailureLogsArchive() {
       cd build/*
     fi
 
+pwd
 /usr/bin/clang --version
 
     local adoptLogArchiveDir="TemurinLogsArchive"
@@ -1019,6 +1020,10 @@ createOpenJDKFailureLogsArchive() {
     if [[ -f "../../config.log" ]]; then
       echo "Copying ../../config.log to ${adoptLogArchiveDir}"
       cp ../../config.log ${adoptLogArchiveDir}
+    fi
+    if [[ -f "config.log" ]]; then
+      echo "Copying config.log to ${adoptLogArchiveDir}"
+      cp config.log ${adoptLogArchiveDir}
     fi
     if [[ -d "make-support/failure-logs" ]]; then
       echo "Copying make-support/failure-logs to ${adoptLogArchiveDir}"
