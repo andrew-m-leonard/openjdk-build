@@ -1001,7 +1001,6 @@ createOpenJDKFailureLogsArchive() {
     if [ -z "${BUILD_CONFIG[USER_OPENJDK_BUILD_ROOT_DIRECTORY]}" ] ; then
       cd build/*
     fi
-pwd
 
     local adoptLogArchiveDir="TemurinLogsArchive"
 
@@ -1014,24 +1013,19 @@ pwd
       echo "Copying build.log to ${adoptLogArchiveDir}"
       cp build.log ${adoptLogArchiveDir}
     fi
-    # Copy build and failure logs
-    if [[ -f "config.log" ]]; then
-      echo "Copying config.log to ${adoptLogArchiveDir}"
-      cp config.log ${adoptLogArchiveDir}
+    # Copy configure config.log
+    if [[ -f "../../config.log" ]]; then
+      echo "Copying ../../config.log to ${adoptLogArchiveDir}"
+      cp ../../config.log ${adoptLogArchiveDir}
     fi
     if [[ -d "make-support/failure-logs" ]]; then
       echo "Copying make-support/failure-logs to ${adoptLogArchiveDir}"
       mkdir -p "${adoptLogArchiveDir}/make-support"
       cp -r "make-support/failure-logs" "${adoptLogArchiveDir}/make-support"
     fi
-    if [[ -d "configure-support" ]]; then
-      echo "Copying configure-support to ${adoptLogArchiveDir}"
-      mkdir -p "${adoptLogArchiveDir}/configure-support"
-      cp -r "configure-support" "${adoptLogArchiveDir}/configure-support"
-    fi
 
     # Find any cores, dumps, ..
-    find . -name 'config.log' -o -name 'core.*' -o -name 'core.*.dmp' -o -name 'javacore.*.txt' -o -name 'Snap.*.trc' -o -name 'jitdump.*.dmp' | sed 's#^./##' | while read -r dump ; do
+    find . -name 'core.*' -o -name 'core.*.dmp' -o -name 'javacore.*.txt' -o -name 'Snap.*.trc' -o -name 'jitdump.*.dmp' | sed 's#^./##' | while read -r dump ; do
       filedir=$(dirname "${dump}")
       echo "Copying ${dump} to ${adoptLogArchiveDir}/${filedir}"
       mkdir -p "${adoptLogArchiveDir}/${filedir}"
