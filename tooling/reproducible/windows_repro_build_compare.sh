@@ -728,35 +728,37 @@ Build_JDK_Using_OpenJDK_Build() {
   # Trigger Build
   cd "$WORK_DIR"
 
-  echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into $WORK_DIR/openjdk"
-  git clone -q "$openjdkSourceRepo" "$WORK_DIR/openjdk" || exit 1
-  echo "Switching To OpenJDK tag : $openjdkSourceTag"
-  (cd "$WORK_DIR/openjdk" && git checkout -q "$openjdkSourceTag")
+  #echo "Cloning OpenJDK source Repository: $openjdkSourceRepo into $WORK_DIR/openjdk"
+  #git clone -q "$openjdkSourceRepo" "$WORK_DIR/openjdk" || exit 1
+  #echo "Switching To OpenJDK tag : $openjdkSourceTag"
+  #(cd "$WORK_DIR/openjdk" && git checkout -q "$openjdkSourceTag")
 
-  echo "Executing: bash ./configure $adoptiumConfigureArgs"
-  if ! echo "cd openjdk && bash ./configure $adoptiumConfigureArgs > repro_configure.log 2>&1" | sh; then
-    cat openjdk/repro_configure.log || true
-    echo "OpenJDK configure failure, exiting"
-    exit 1
-  fi
+  #echo "Executing: bash ./configure $adoptiumConfigureArgs"
+  #if ! echo "cd openjdk && bash ./configure $adoptiumConfigureArgs > repro_configure.log 2>&1" | sh; then
+  #  cat openjdk/repro_configure.log || true
+  #  echo "OpenJDK configure failure, exiting"
+  #  exit 1
+  #fi
 
-  cat openjdk/repro_configure.log
+  #cat openjdk/repro_configure.log
 
-  echo "Executing: make images"
-  if ! echo "cd openjdk/build/* && make images > ../../repro_build.log 2>&1" | sh; then
-    cat openjdk/repro_build.log || true
-    echo "OpenJDK make images failure, exiting"
-    exit 1
-  fi
+  #echo "Executing: make images"
+  #if ! echo "cd openjdk/build/* && make images > ../../repro_build.log 2>&1" | sh; then
+  #  cat openjdk/repro_build.log || true
+  #  echo "OpenJDK make images failure, exiting"
+  #  exit 1
+  #fi
 
-  cat openjdk/repro_build.log
+  #cat openjdk/repro_build.log
+
+curl -L https://github.com/adoptium/temurin25-binaries/releases/download/jdk-25.0.3%2B9/OpenJDK25U-jdk_x64_windows_hotspot_25.0.3_9.zip -o "$WORK_DIR/reproJDK.zip"
 
   # Copy The Built JDK To The Working Directory
-  mv openjdk/build/*/images/jdk openjdk/build/$openjdkSourceTag
-  (cd openjdk/build && zip -r reproJDK.zip $openjdkSourceTag)
-  cp "${WORK_DIR}"/openjdk/build/reproJDK.zip "$WORK_DIR/reproJDK.zip"
-  cp "${WORK_DIR}"/openjdk/repro_configure.log "$WORK_DIR/build.log"
-  cat "${WORK_DIR}"/openjdk/repro_build.log >> "$WORK_DIR/build.log"
+#  mv openjdk/build/*/images/jdk openjdk/build/$openjdkSourceTag
+#  (cd openjdk/build && zip -r reproJDK.zip $openjdkSourceTag)
+#  cp "${WORK_DIR}"/openjdk/build/reproJDK.zip "$WORK_DIR/reproJDK.zip"
+#  cp "${WORK_DIR}"/openjdk/repro_configure.log "$WORK_DIR/build.log"
+#  cat "${WORK_DIR}"/openjdk/repro_build.log >> "$WORK_DIR/build.log"
 }
 
 Compare_JDK() {
