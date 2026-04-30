@@ -447,7 +447,7 @@ function removeSignatures() {
      do
       f=$(cygpath -w $f)
       rc=0
-      "$signToolPath" remove /s "$f" 1> /dev/null 2>&1 || rc=$?
+      "$signToolPath" remove /s '$f' 1> /dev/null 2>&1 || rc=$?
 
       # if [ $rc -ne 0 ]; then
       #   echo "Removing signature from $f failed"
@@ -496,8 +496,10 @@ function tempSign() {
      do
       rc=0
       f=$(cygpath -w $f)
-      echo "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 "$f"
-      "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 "$f" || rc=$?
+      echo "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 '$f'
+pwd
+ls -l
+      "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 '$f' || rc=$?
       if [ $rc -ne 0 ]; then
         echo "Adding Temp Signature for $f failed"
       fi
