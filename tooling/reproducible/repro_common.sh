@@ -68,17 +68,22 @@ function expandJDK() {
   unzip -qd "${JDK_HOME_DIR}/lib/jrt-fs-expanded" "${JDK_HOME_DIR}/lib/jrt-fs.jar"
   rm "${JDK_HOME_DIR}/lib/jrt-fs.jar"
 
-  mkdir -p "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded"
-  unzip -qd "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded" "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar"
-  rm "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar"
+  if [[ -f "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar" ]]; then
+    mkdir -p "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded"
+    unzip -qd "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs-expanded" "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar"
+    rm "${JDK_HOME_DIR}/jmods/expanded_java.base.jmod/lib/jrt-fs.jar"
+  fi
 
   echo "$(date +%T) :   Expanding lib/ct.sym to workaround zip timestamp differences (https://bugs.openjdk.org/browse/JDK-8327466)"
   mkdir "${JDK_HOME_DIR}/lib/ct-sym-expanded"
   unzip -qd "${JDK_HOME_DIR}/lib/ct-sym-expanded" "${JDK_HOME_DIR}/lib/ct.sym"
   rm "${JDK_HOME_DIR}/lib/ct.sym"
-  mkdir -p "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct-sym-expanded"
-  unzip -qd "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct-sym-expanded" "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct.sym"
-  rm "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct.sym"
+
+  if [[ -f "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct.sym" ]]; then
+    mkdir -p "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct-sym-expanded"
+    unzip -qd "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct-sym-expanded" "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct.sym"
+    rm "${JDK_HOME_DIR}/jmods/expanded_jdk.compiler.jmod/lib/ct.sym"
+  fi
 
   rm -rf "${JDK_COPY}"
 }
@@ -491,7 +496,7 @@ function tempSign() {
      do
       rc=0
       f=$(cygpath -w $f)
-      "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 $f 1> /dev/null || rc=$?
+      "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 "$f" 1> /dev/null || rc=$?
       if [ $rc -ne 0 ]; then
         echo "Adding Temp Signature for $f failed"
       fi
