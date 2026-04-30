@@ -492,16 +492,16 @@ function tempSign() {
     openssl req -x509 -quiet -newkey rsa:4096 -sha256 -days 3650 -passout pass:test -keyout $selfCert.key -out $selfCert.crt -subj "/CN=example.com" -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1"
     # nosemgrep
     openssl pkcs12 -export -passout pass:test -passin pass:test -out $selfCert.pfx -inkey $selfCert.key -in $selfCert.crt
+
+    pfxPath=$(cygpath -w "$(pwd)/$selfCert.pfx")
+
     FILES=$(find "${JDK_DIR}" -type f -name '*.exe' -o -name '*.dll')
     for f in $FILES
      do
       rc=0
       f=$(cygpath -w $f)
-      echo "$signToolPath" sign /debug /f $selfCert.pfx /p test /fd SHA256 "$f"
-which signtool
-pwd
-ls -l
-      "$signToolPath" sign /debug /f $selfCert.pfx /p test /fd SHA256 "$f" || rc=$?
+      echo "$signToolPath" sign /debug /f "$pfxPath" /p test /fd SHA256 "$f"
+      "$signToolPath" sign /debug /f "$pfxPath" /p test /fd SHA256 "$f" || rc=$?
       if [ $rc -ne 0 ]; then
         echo "Adding Temp Signature for $f failed"
       fi
