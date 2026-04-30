@@ -495,7 +495,7 @@ function tempSign() {
     for f in $FILES
      do
       rc=0
-      if=$(cygpath -w $f)
+      f=$(cygpath -w $f)
       echo "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 "$f"
       "$signToolPath" sign /f $selfCert.pfx /p test /fd SHA256 "$f" || rc=$?
       if [ $rc -ne 0 ]; then
