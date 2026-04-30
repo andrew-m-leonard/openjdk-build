@@ -440,6 +440,7 @@ function removeSignatures() {
 
   if [[ "$OS" =~ CYGWIN* ]]; then
     # signtool should be on PATH
+which signtool
     signToolPath="signtool"
     echo "$(date +%T) : Removing all signatures from exe and dll files in ${JDK_DIR}"
     FILES=$(find "${JDK_DIR}" -type f -name '*.exe' -o -name '*.dll')
@@ -497,6 +498,7 @@ function tempSign() {
       rc=0
       f=$(cygpath -w $f)
       echo "$signToolPath" sign /debug /f $selfCert.pfx /p test /fd SHA256 "$f"
+which signtool
 pwd
 ls -l
       "$signToolPath" sign /debug /f $selfCert.pfx /p test /fd SHA256 "$f" || rc=$?
