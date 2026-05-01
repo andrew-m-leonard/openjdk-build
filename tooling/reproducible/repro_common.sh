@@ -491,6 +491,7 @@ function tempSign() {
     # nosemgrep
 
 openssl version
+openssl version -d
 
     openssl req -x509 -quiet -newkey rsa:4096 -sha256 -days 3650 -passout pass:test -keyout $selfCert.key -out $selfCert.crt -subj "/CN=example.com" -addext "subjectAltName=DNS:example.com,DNS:*.example.com,IP:10.0.0.1"
     # nosemgrep
