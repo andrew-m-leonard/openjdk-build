@@ -504,8 +504,9 @@ openssl version -d
      do
       rc=0
       f=$(cygpath -w $f)
-      echo "$signToolPath" sign /debug /f "$pfxPath" /p test /fd SHA256 "$f"
-      "$signToolPath" sign /debug /f "$pfxPath" /p test /fd SHA256 "$f" || rc=$?
+      echo "$signToolPath" sign /debug /v /f "$pfxPath" /p test /fd SHA256 "$f"
+which signtool
+      "$signToolPath" sign /debug /v /f "$pfxPath" /p test /fd SHA256 "$f" || rc=$?
       if [ $rc -ne 0 ]; then
         echo "Adding Temp Signature for $f failed"
       fi
