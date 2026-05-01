@@ -611,7 +611,7 @@ Check_And_Install_BootJDK() {
     curl -s -L "https://api.adoptium.net/v3/signature/version/jdk-${bootJDK}/windows/${NATIVE_API_ARCH}/jdk/hotspot/normal/eclipse?project=jdk" --output "$WORK_DIR/bootjdk.zip.sig"
 
     echo "Obtaining Adoptium's public GPG key.."
-    curl -sSL "http://keyserver.ubuntu.com/pks/lookup?op=get&search=${ADOPTIUM_PUBLIC_GPG_KEY}" --output "$WORK_DIR/adoptium.gpg.key"
+    curl -sSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=${ADOPTIUM_PUBLIC_GPG_KEY}" --output "$WORK_DIR/adoptium.gpg.key"
     gpg --import "$WORK_DIR/adoptium.gpg.key"
     rm "$WORK_DIR/adoptium.gpg.key"
     if ! gpg --verify "$WORK_DIR/bootjdk.zip.sig" "$WORK_DIR/bootjdk.zip"; then
