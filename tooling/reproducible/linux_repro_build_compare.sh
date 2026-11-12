@@ -263,7 +263,7 @@ downloadTooling() {
     fi
 
     echo "Obtaining Adoptium's public GPG key.."
-    curl -sSL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=${ADOPTIUM_PUBLIC_GPG_KEY}" --output "adoptium.gpg.key"
+    curl -sSL "https://185.125.188.27/pks/lookup?op=get&search=${ADOPTIUM_PUBLIC_GPG_KEY}" --output "adoptium.gpg.key"
     gpg --import "adoptium.gpg.key"
     rm "adoptium.gpg.key"
     if ! gpg --verify "bootjdk.tar.gz.sig" "bootjdk.tar.gz"; then
